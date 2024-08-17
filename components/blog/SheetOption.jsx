@@ -1,0 +1,119 @@
+import React from "react";
+import { Text, View, StyleSheet } from "react-native";
+import ActionSheet, { useSheetPayload } from "react-native-actions-sheet";
+import Textarea from "react-native-textarea";
+import { Button } from "@rneui/themed";
+import { useState } from "react";
+
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Fontisto from "@expo/vector-icons/Fontisto";
+
+function SheetOption() {
+    const payload = useSheetPayload("SheetOption");
+    return (
+        <ActionSheet
+            gestureEnabled={true}
+            indicatorStyle={{
+                width: 100,
+            }}
+        >
+            <View
+                style={{
+                    paddingHorizontal: 12,
+                    paddingBottom: 10,
+                }}
+            >
+                <Text style={styles.title}>Tùy chọn</Text>
+                <View style={styles.buttonGroup}>
+                    {payload && (
+                        <Button
+                            title="Sửa bài viết"
+                            icon={<AntDesign name="edit" size={18} color="black" />}
+                            iconPosition="left"
+                            radius="md"
+                            type="clear"
+                            buttonStyle={styles.buttonItem}
+                            titleStyle={styles.titleStyle}
+                        />
+                    )}
+                    <Button
+                        title="Sao chép liên kết"
+                        icon={<AntDesign name="link" size={18} color="black" />}
+                        iconPosition="left"
+                        radius="md"
+                        type="clear"
+                        buttonStyle={styles.buttonItem}
+                        titleStyle={styles.titleStyle}
+                    />
+                    {payload && (
+                        <Button
+                            title="Xóa bài viết"
+                            icon={<AntDesign name="delete" size={18} color="red" />}
+                            iconPosition="left"
+                            radius="md"
+                            type="clear"
+                            buttonStyle={styles.buttonItem}
+                            titleStyle={styles.titleStyleDel}
+                        />
+                    )}
+                    <Button
+                        title="Đóng"
+                        icon={<Fontisto name="close-a" size={16} color="black" />}
+                        iconPosition="left"
+                        radius="md"
+                        type="clear"
+                        buttonStyle={styles.buttonItem}
+                        titleStyle={styles.titleStyle}
+                    />
+                </View>
+            </View>
+        </ActionSheet>
+    );
+}
+
+export default SheetOption;
+const styles = StyleSheet.create({
+    title: {
+        paddingTop: 8,
+        paddingBottom: 4,
+        marginBottom: 8,
+        fontSize: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: "#ccc",
+    },
+    buttonGroup: {
+        backgroundColor: "#f3f3f3",
+        padding: 4,
+        paddingLeft: 8,
+        paddingRight: 8,
+        borderRadius: 15,
+    },
+    buttonItem: {
+        width: "100%",
+        justifyContent: "flex-start", // Căn chỉnh nội dung về phía trái
+        paddingHorizontal: 10, // Đảm bảo đủ khoảng cách giữa icon và chữ
+    },
+    titleStyle: {
+        color: "#000",
+        textAlign: "left",
+        marginLeft: 10, // Khoảng cách giữa icon và chữ
+    },
+    titleStyleDel: {
+        color: "red",
+        marginLeft: 10,
+        textAlign: "left",
+        width: "100%",
+    },
+});
+{
+    /* <Textarea
+                    // containerStyle={styles.textareaContainer}
+                    // style={styles.textarea}
+                    onChangeText={(e) => setText(e.value)}
+                    // defaultValue={this.state.text}
+                    maxLength={120}
+                    placeholder={"好玩有趣的，大家同乐，伤感忧闷的，大家同哭。。。"}
+                    placeholderTextColor={"#c7c7c7"}
+                    underlineColorAndroid={"transparent"}
+                /> */
+}

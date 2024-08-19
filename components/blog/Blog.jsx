@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, ImageBackground } from "react-native";
 import React, { useEffect, useState } from "react";
 import Option from "./Option";
 import FastImage from "react-native-fast-image";
+import CountReact from "./CountReact";
 
 const Blog = ({ blogId, authUser }) => {
     const [blogData, setBlogData] = useState(null);
@@ -79,9 +80,9 @@ const Blog = ({ blogId, authUser }) => {
                             <Text style={styles.userName}>{authorData?.displayName}</Text>
                             <Text style={styles.postTime}>{blogData?.createAt && handleConvertDate(blogData?.createAt)}</Text>
                         </View>
-                        <Option isMyBlog={isMyBlog} />
+                        <Option isMyBlog={isMyBlog} authUser={authUser} blogData={blogData} blogId={blogId} />
                     </View>
-                    {blogData?.post.content && <Text style={styles.content}>{blogData?.post.content}</Text>}
+                    {blogData?.post.content && <Text style={styles.content}>{blogData?.post.normalText}</Text>}
 
                     {blogData?.post.imageURL && (
                         <View style={styles.imageContainer}>
@@ -98,6 +99,9 @@ const Blog = ({ blogId, authUser }) => {
                             </ImageBackground>
                         </View>
                     )}
+                    <View style={{ marginTop: 20 }}>
+                        <CountReact authUser={authUser} blogId={blogId} />
+                    </View>
                 </View>
             </View>
         </Text>
@@ -109,7 +113,7 @@ const styles = StyleSheet.create({
     main: {
         paddingTop: 12,
         paddingBottom: 12,
-        borderTopWidth: 1,
+        borderBottomWidth: 1,
         borderColor: "#ccc",
         flexDirection: "row",
         overflow: "hidden",

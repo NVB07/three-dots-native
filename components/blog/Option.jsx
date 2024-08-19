@@ -5,9 +5,9 @@ import { SheetManager } from "react-native-actions-sheet";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { Button } from "@rneui/themed";
 
-const Option = ({ isMyBlog }) => {
+const Option = ({ isMyBlog, authUser, blogData, blogId }) => {
     return (
-        <Button type="clear" onPress={() => SheetManager.show("SheetOption", { payload: isMyBlog })} radius={9999} style={styles.btn}>
+        <Button type="clear" onPress={() => SheetManager.show("SheetOption", { payload: { isMyBlog, authUser, blogData, blogId } })} radius={9999} style={styles.btn}>
             <SimpleLineIcons name="options" size={16} color="black" />
         </Button>
     );

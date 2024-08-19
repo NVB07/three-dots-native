@@ -1,84 +1,44 @@
-import { View, StyleSheet, TextInput, Keyboard } from "react-native";
-import storage from "@react-native-firebase/storage";
+import { View, StyleSheet, TextInput, Keyboard, Alert } from "react-native";
+
 import ActionSheet, { useSheetPayload } from "react-native-actions-sheet";
 import { Button, Overlay } from "@rneui/themed";
 import { SheetManager } from "react-native-actions-sheet";
 import { useState } from "react";
 import FastImage from "react-native-fast-image";
 import { Text } from "@rneui/base";
-import * as ImagePicker from "expo-image-picker";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-import { addBlog } from "@/components/firebase/service";
-function NewBlogSheet() {
-    const [text, setText] = useState("");
-    const [image, setImage] = useState(null);
+import { updateBlog } from "@/components/firebase/service";
+function EditBlogSheet() {
     const [loading, setLoading] = useState(false);
-    const payload = useSheetPayload("NewBlogSheet");
+    const oldData = useSheetPayload("EditBlogSheet");
+    const [text, setText] = useState(oldData?.blogData.post.normalText);
 
-    const uploadImageToStorage = async (imageUri) => {
-        const fileName = imageUri.split("/").pop(); // Lấy tên file từ URI
-        const reference = storage().ref(`imagePostBlogs/${fileName}`);
-
-        try {
-            await reference.putFile(imageUri);
-            const url = await reference.getDownloadURL();
-            return url;
-        } catch (error) {
-            console.error("Error uploading image:", error);
-            return null;
-        }
-    };
-
-    const pickImage = async () => {
-        Keyboard.dismiss();
-        if (image) {
-            setImage(null);
-        }
-        // No permissions request is necessary for launching the image library
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: false,
-            quality: 1,
-        });
-
-        console.log(result);
-
-        if (!result.canceled) {
-            Keyboard.dismiss();
-            setImage(result.assets[0].uri);
-            console.log(result.assets[0].uri);
-        }
-    };
-    const removeImage = () => {
-        setImage(null);
-    };
-    const handleAddBlog = async () => {
+    const handleUpdateBlog = async () => {
         setLoading(true);
-        let imageUrl = "";
-        if (image) {
-            imageUrl = await uploadImageToStorage(image);
-        }
+
         const searchKeywords = text
             .trim()
             .toUpperCase()
             .split(/[ \n]+/);
-        const addData = await addBlog({
-            author: {
-                uid: payload?.uid,
-            },
-            post: {
-                content: text,
-                searchKeywords: searchKeywords,
-                normalText: text,
-                imageURL: imageUrl,
-            },
+        const updateData = await updateBlog(oldData.blogId, {
+            "post.content": text.trim(),
+            "post.searchKeywords": searchKeywords,
+            "post.normalText": text.trim(),
         });
-        if (addData) {
+        if (updateData) {
             Keyboard.dismiss();
-            SheetManager.hide("NewBlogSheet");
+            SheetManager.hide("EditBlogSheet");
+            SheetManager.hide("SheetOption");
             setLoading(false);
+        } else {
+            Alert.alert("Đã xảy ra lỗi", "Lỗi cập nhật nội dung.", [
+                {
+                    text: "OK",
+                    onPress: () => console.log("Lỗi cập nhật nội dung."),
+                },
+            ]);
         }
     };
 
@@ -97,11 +57,11 @@ function NewBlogSheet() {
                 }}
             >
                 <View style={{ width: "100%", justifyContent: "space-between", display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    <Text style={{ fontSize: 17, fontWeight: "bold" }}>Bài viết mới</Text>
+                    <Text style={{ fontSize: 17, fontWeight: "bold" }}>Sửa nội dung bài viết</Text>
                     <View style={{ width: 50, height: 50 }}>
                         <Button
                             title="Hủy"
-                            onPress={() => SheetManager.hide("NewBlogSheet")}
+                            onPress={() => SheetManager.hide("EditBlogSheet")}
                             titleStyle={{ color: "red" }}
                             iconPosition="left"
                             radius="md"
@@ -115,14 +75,14 @@ function NewBlogSheet() {
                             <FastImage
                                 style={styles.avatar}
                                 source={{
-                                    uri: payload?.photoURL,
+                                    uri: oldData?.authUser.photoURL,
                                     priority: FastImage.priority.low,
                                 }}
                                 resizeMode={FastImage.resizeMode.cover}
                             />
                             <View>
-                                <Text style={styles.headerText}>{payload?.displayName}</Text>
-                                <Text style={{ fontSize: 14, marginLeft: 6, color: "#999" }}>Tạo bài viết</Text>
+                                <Text style={styles.headerText}>{oldData?.authUser.displayName}</Text>
+                                <Text style={{ fontSize: 14, marginLeft: 6, color: "#999" }}>Sửa bài viết</Text>
                             </View>
                         </View>
                     </View>
@@ -131,36 +91,25 @@ function NewBlogSheet() {
                         onChangeText={(e) => setText(e)}
                         multiline={true}
                         numberOfLines={4}
-                        placeholder="Có gì mới?"
+                        defaultValue={oldData?.blogData.post.normalText}
+                        placeholder="Nội dung mới"
                         style={styles.textarea}
                     />
                     <View style={styles.container}>
                         <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
+                            <View style={{ width: 50, height: 50, borderRadius: 9999, padding: 0 }}></View>
                             <View style={{ width: 50, height: 50, borderRadius: 9999, padding: 0 }}>
-                                <Button type="clear" radius={9999} onPress={pickImage}>
-                                    <FontAwesome name="image" size={24} color={loading ? "gray" : "green"} />
-                                </Button>
-                            </View>
-                            <View style={{ width: 50, height: 50, borderRadius: 9999, padding: 0 }}>
-                                <Button disabled={!text && !image} type="solid" radius={9999} onPress={handleAddBlog}>
+                                <Button disabled={!text || text === oldData?.blogData.post.normalText} onPress={handleUpdateBlog} type="solid" radius={9999}>
                                     <AntDesign name="arrowright" size={24} color="white" />
                                 </Button>
                             </View>
                         </View>
-                        {image && (
-                            <View style={{ position: "relative", top: 0, left: 0, paddingHorizontal: 20, paddingVertical: 20 }}>
-                                <FastImage source={{ uri: image, priority: FastImage.priority.normal }} style={styles.image} />
-                                <View style={{ position: "absolute", top: 5, right: 5, width: 40, height: 50, borderRadius: 9999 }}>
-                                    <Button title="X" radius={9999} color="warning" onPress={removeImage} />
-                                </View>
-                            </View>
-                        )}
                     </View>
                 </View>
             </View>
             <Overlay isVisible={loading}>
                 <View style={{ width: 300 }}>
-                    <Text style={{ textAlign: "center", fontSize: 20 }}>Đang đăng bài viết</Text>
+                    <Text style={{ textAlign: "center", fontSize: 20 }}>Đang sửa bài viết</Text>
                     <Button loadingProps={{ size: "large" }} loading type="clear" />
                 </View>
             </Overlay>
@@ -168,7 +117,7 @@ function NewBlogSheet() {
     );
 }
 
-export default NewBlogSheet;
+export default EditBlogSheet;
 const styles = StyleSheet.create({
     buttonGroup: {
         backgroundColor: "#f3f3f3",

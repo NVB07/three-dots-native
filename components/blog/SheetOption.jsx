@@ -1,15 +1,33 @@
 import React from "react";
-import { Text, View, StyleSheet } from "react-native";
-import ActionSheet, { useSheetPayload } from "react-native-actions-sheet";
-import Textarea from "react-native-textarea";
+import { Text, View, StyleSheet, Alert } from "react-native";
+import ActionSheet, { useSheetPayload, SheetManager } from "react-native-actions-sheet";
 import { Button } from "@rneui/themed";
 import { useState } from "react";
 
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Fontisto from "@expo/vector-icons/Fontisto";
+import { deleteBlog } from "../firebase/service";
 
 function SheetOption() {
-    const payload = useSheetPayload("SheetOption");
+    const sheetData = useSheetPayload("SheetOption");
+
+    const handleDeleteBlog = () => {
+        Alert.alert("Xóa bài viết", "Việc xóa bài viết sẽ không thể khôi phục trong tương lai. Bạn có chắc muốn xóa ?", [
+            {
+                text: "Hủy",
+                onPress: () => console.log("Đã hủy"),
+                style: "cancel",
+            },
+            {
+                text: "Xóa",
+                onPress: () => {
+                    deleteBlog(sheetData.blogId);
+                    SheetManager.hide("SheetOption");
+                },
+            },
+        ]);
+    };
+
     return (
         <ActionSheet
             gestureEnabled={true}
@@ -25,15 +43,20 @@ function SheetOption() {
             >
                 <Text style={styles.title}>Tùy chọn</Text>
                 <View style={styles.buttonGroup}>
-                    {payload && (
+                    {sheetData?.isMyBlog && (
                         <Button
-                            title="Sửa bài viết"
+                            title="Sửa nội dung bài viết"
                             icon={<AntDesign name="edit" size={18} color="black" />}
                             iconPosition="left"
                             radius="md"
                             type="clear"
                             buttonStyle={styles.buttonItem}
                             titleStyle={styles.titleStyle}
+                            onPress={() =>
+                                SheetManager.show("EditBlogSheet", {
+                                    payload: { authUser: sheetData.authUser, blogData: sheetData.blogData, blogId: sheetData.blogId },
+                                })
+                            }
                         />
                     )}
                     <Button
@@ -45,13 +68,14 @@ function SheetOption() {
                         buttonStyle={styles.buttonItem}
                         titleStyle={styles.titleStyle}
                     />
-                    {payload && (
+                    {sheetData?.isMyBlog && (
                         <Button
                             title="Xóa bài viết"
                             icon={<AntDesign name="delete" size={18} color="red" />}
                             iconPosition="left"
                             radius="md"
                             type="clear"
+                            onPress={handleDeleteBlog}
                             buttonStyle={styles.buttonItem}
                             titleStyle={styles.titleStyleDel}
                         />
@@ -61,6 +85,7 @@ function SheetOption() {
                         icon={<Fontisto name="close-a" size={16} color="black" />}
                         iconPosition="left"
                         radius="md"
+                        onPress={() => SheetManager.hide("SheetOption")}
                         type="clear"
                         buttonStyle={styles.buttonItem}
                         titleStyle={styles.titleStyle}

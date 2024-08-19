@@ -47,7 +47,12 @@ function HomePage() {
                             })
                         }
                         radius={"sm"}
-                        style={styles.buttonNewBlog}
+                        style={({ pressed }) => [
+                            {
+                                backgroundColor: pressed ? "#C2C2C2FF" : "#D8D8D8FF",
+                            },
+                            styles.buttonNewBlog,
+                        ]}
                     >
                         <View style={styles.newBlogAction}>
                             <FastImage
@@ -60,13 +65,10 @@ function HomePage() {
                             />
                             <View>
                                 <Text style={styles.headerText}>{authUser?.displayName}</Text>
-                                <Text style={{ color: "#999", marginLeft: 6 }}>Chạm để thêm bài viết</Text>
+                                <Text style={{ color: "#999", marginLeft: 6 }}>Thêm bài viết</Text>
                             </View>
                         </View>
                     </Pressable>
-                    {/* <Button type="clear" onPress={showUser} radius={9999} style={styles.btn}>
-                            log
-                        </Button> */}
                 </View>
 
                 {blogs.map((blogId, index) => {
@@ -84,12 +86,18 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        height: 70,
-        // backgroundColor: "gray",
-        paddingVertical: 8,
+        backgroundColor: "#D8D8D8FF",
+        borderRadius: 20,
+        alignItems: "center",
+        justifyContent: "center",
+        flex: 1,
+        marginBottom: 8,
     },
     buttonNewBlog: {
-        padding: 0,
+        flex: 1,
+        borderRadius: 20,
+        width: "100%",
+        paddingVertical: 10,
     },
     scroll: {
         flex: 1,
@@ -99,6 +107,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginLeft: 6,
         fontWeight: "bold",
+        textAlign: "center",
     },
     avatar: {
         backgroundColor: "yellow",
@@ -108,7 +117,8 @@ const styles = StyleSheet.create({
     },
     newBlogAction: {
         width: "100%",
-        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
     },
 });
 

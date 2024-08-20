@@ -6,11 +6,41 @@ import FastImage from "react-native-fast-image";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import CountReact from "./CountReact";
 import { useEffect, useState } from "react";
+import CommentItem from "./CommentItem";
+import firestore from "@react-native-firebase/firestore";
 
 function SheetComments() {
     const sheetData = useSheetPayload("SheetComments");
     const [inputPosition, setInputPosition] = useState(0);
-    const [comment, setComment] = useState("");
+    const [commentValue, setCommentValue] = useState("");
+    const [commentSnapshot, setCommentSnapshot] = useState([]);
+
+    useEffect(() => {
+        const unsubscribe = firestore()
+            .collection("blogs")
+            .doc(sheetData.blogId)
+            .collection("comments")
+            .orderBy("sendTime", "desc")
+            .onSnapshot(
+                (querySnapshot) => {
+                    if (!querySnapshot.empty) {
+                        const commentsData = querySnapshot.docs.map((doc) => ({
+                            id: doc.id,
+                            ...doc.data(),
+                        }));
+
+                        setCommentSnapshot(commentsData);
+                    } else {
+                        setCommentSnapshot([]);
+                    }
+                },
+                (error) => {
+                    console.error("Error fetching comments: ", error);
+                }
+            );
+
+        return () => unsubscribe();
+    }, []);
 
     useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
@@ -69,7 +99,7 @@ function SheetComments() {
                         paddingTop: 0,
                     }}
                 >
-                    <View style={{ paddingTop: 4 }}>
+                    <View style={{ paddingVertical: 4, borderBottomWidth: 1, borderColor: "#ccc" }}>
                         <View style={{ flexDirection: "row" }}>
                             <FastImage
                                 style={{ width: 36, height: 36, borderRadius: 9999 }}
@@ -102,6 +132,9 @@ function SheetComments() {
                         )}
                         <CountReact showSheet authUser={sheetData.authUser} blogId={sheetData.blogId} />
                     </View>
+                    {commentSnapshot.map((item, index) => {
+                        return <CommentItem key={index} comment={item} />;
+                    })}
                 </ScrollView>
                 <View
                     style={{
@@ -127,14 +160,14 @@ function SheetComments() {
                         <TextInput
                             textAlignVertical="top"
                             multiline={false}
-                            onChangeText={(e) => setComment(e)}
+                            onChangeText={(e) => setCommentValue(e)}
                             autoFocus
                             placeholder="Bình luận"
                             style={{ height: 35, flex: 1, paddingVertical: 8, paddingHorizontal: 8 }}
                         />
                     </View>
                     <View>
-                        <Button disabled={comment.trim() === ""} radius={9999} buttonStyle={{ width: 38, height: 38, backgroundColor: "#007DFDFF" }}>
+                        <Button disabled={commentValue.trim() === ""} radius={9999} buttonStyle={{ width: 38, height: 38, backgroundColor: "#007DFDFF" }}>
                             <Ionicons name="send" size={20} color="#fff" />
                         </Button>
                     </View>

@@ -8,6 +8,8 @@ import AuthProvider from "@/components/context/AuthProvider";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { SheetProvider } from "react-native-actions-sheet";
 import "../components/sheets";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -29,15 +31,22 @@ export default function RootLayout() {
 
     return (
         // <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <SheetProvider context="global">
-            <AuthProvider>
-                <Stack>
-                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                    <Stack.Screen name="+not-found" />
-                </Stack>
-            </AuthProvider>
-        </SheetProvider>
-
+        <SafeAreaProvider>
+            <GestureHandlerRootView
+                style={{
+                    flex: 1,
+                }}
+            >
+                <SheetProvider context="global">
+                    <AuthProvider>
+                        <Stack>
+                            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                            <Stack.Screen name="+not-found" />
+                        </Stack>
+                    </AuthProvider>
+                </SheetProvider>
+            </GestureHandlerRootView>
+        </SafeAreaProvider>
         // </ThemeProvider>
     );
 }

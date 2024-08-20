@@ -1,10 +1,10 @@
 import { Pressable, Text, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Button } from "@rneui/base";
 import { useState, useEffect } from "react";
 import firestore from "@react-native-firebase/firestore";
+import { SheetManager } from "react-native-actions-sheet";
 
-const CountReact = ({ authUser, blogId }) => {
+const CountReact = ({ authUser, blogId, blogData, authorData, showSheet = false }) => {
     const [liked, setLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const [countComment, setCountComment] = useState(0);
@@ -35,6 +35,7 @@ const CountReact = ({ authUser, blogId }) => {
                 .collection("blogs")
                 .doc(blogId)
                 .collection("comments")
+                .orderBy("sendTime", "desc")
                 .onSnapshot(
                     (querySnapshot) => {
                         if (!querySnapshot.empty) {
@@ -79,11 +80,18 @@ const CountReact = ({ authUser, blogId }) => {
                         {liked ? <Ionicons name="heart-sharp" size={24} color={"red"} /> : <Ionicons name="heart-outline" size={24} color={"#333"} />}
                     </Pressable>
                 </View>
-                <View style={{ height: 24, width: 24, marginBottom: 4, marginLeft: 8 }}>
-                    <Pressable type="clear" onPress={() => console.log("cmt")} radius={"sm"} style={{}}>
-                        <Ionicons name="chatbubble-outline" size={22} color={"#333"} />
-                    </Pressable>
-                </View>
+                {!showSheet && (
+                    <View style={{ height: 24, width: 24, marginBottom: 4, marginLeft: 8 }}>
+                        <Pressable
+                            type="clear"
+                            onPress={() => SheetManager.show("SheetComments", { payload: { blogData, blogId, comments, authorData, authUser } })}
+                            radius={"sm"}
+                            style={{}}
+                        >
+                            <Ionicons name="chatbubble-outline" size={22} color={"#333"} />
+                        </Pressable>
+                    </View>
+                )}
             </View>
             <View style={{ display: "flex", flexDirection: "row" }}>
                 <Text style={{ color: "#999" }}>{likeCount} lượt thích,</Text>

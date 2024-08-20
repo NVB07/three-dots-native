@@ -26,7 +26,7 @@ const Blog = ({ blogId, authUser }) => {
 
             return time;
         }
-        return "?";
+        return "00:00";
     };
 
     useEffect(() => {
@@ -100,7 +100,7 @@ const Blog = ({ blogId, authUser }) => {
                         </View>
                     )}
                     <View style={{ marginTop: 20 }}>
-                        <CountReact authUser={authUser} blogId={blogId} />
+                        <CountReact authUser={authUser} blogId={blogId} blogData={blogData} authorData={authorData} />
                     </View>
                 </View>
             </View>
@@ -145,6 +145,7 @@ const styles = StyleSheet.create({
     },
     userName: {
         fontWeight: "bold",
+        fontSize: 16,
         marginBottom: 0,
     },
     postTime: {
@@ -161,10 +162,11 @@ const styles = StyleSheet.create({
         height: 32,
         borderRadius: 9999,
     },
-    content: {},
+    content: { fontSize: 16 },
     imageContainer: {
         marginTop: 6,
         flex: 1,
+
         width: "100%",
         height: 350,
         display: "flex",

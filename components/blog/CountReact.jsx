@@ -18,7 +18,7 @@ const CountReact = ({ authUser, blogId, blogData, authorData, showSheet = false 
                 .onSnapshot((documentSnapshot) => {
                     if (documentSnapshot.exists) {
                         const data = documentSnapshot.data();
-                        setLikeCount(data.liked?.length);
+                        setLikeCount(data.liked?.length > 0 ? data.liked?.length : 0);
                         setLiked(
                             data?.liked?.find((uid) => {
                                 return uid === authUser?.uid;

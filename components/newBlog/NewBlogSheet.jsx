@@ -84,6 +84,7 @@ function NewBlogSheet() {
 
     return (
         <ActionSheet
+            keyboardHandlerEnabled={false}
             gestureEnabled={true}
             indicatorStyle={{
                 width: 100,

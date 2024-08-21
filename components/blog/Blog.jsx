@@ -1,9 +1,11 @@
 import firestore from "@react-native-firebase/firestore";
-import { StyleSheet, Text, View, ImageBackground } from "react-native";
+import { Link } from "expo-router";
+import { StyleSheet, Text, View, ImageBackground, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
 import Option from "./Option";
 import FastImage from "react-native-fast-image";
 import CountReact from "./CountReact";
+import { Button } from "@rneui/base";
 
 const Blog = ({ blogId, authUser }) => {
     const [blogData, setBlogData] = useState(null);
@@ -64,20 +66,24 @@ const Blog = ({ blogId, authUser }) => {
             <View style={styles.blog}>
                 <View style={styles.avatar}>
                     {authorData?.photoURL && (
-                        <FastImage
-                            style={{ width: 36, height: 36, borderRadius: 9999 }}
-                            source={{
-                                uri: authorData?.photoURL,
-                                priority: FastImage.priority.low,
-                            }}
-                            resizeMode={FastImage.resizeMode.cover}
-                        />
+                        <Link href={`/user/${authorData?.uid}`}>
+                            <FastImage
+                                style={{ width: 36, height: 36, borderRadius: 9999 }}
+                                source={{
+                                    uri: authorData?.photoURL,
+                                    priority: FastImage.priority.low,
+                                }}
+                                resizeMode={FastImage.resizeMode.cover}
+                            />
+                        </Link>
                     )}
                 </View>
                 <View style={styles.rightContent}>
                     <View style={styles.header}>
                         <View>
-                            <Text style={styles.userName}>{authorData?.displayName}</Text>
+                            <Link href={`/user/${authorData?.uid}`}>
+                                <Text style={styles.userName}>{authorData?.displayName}</Text>
+                            </Link>
                             <Text style={styles.postTime}>{blogData?.createAt && handleConvertDate(blogData?.createAt)}</Text>
                         </View>
                         <Option isMyBlog={isMyBlog} authUser={authUser} blogData={blogData} blogId={blogId} />

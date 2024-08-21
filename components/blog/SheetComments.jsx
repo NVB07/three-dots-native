@@ -8,12 +8,19 @@ import CountReact from "./CountReact";
 import { useEffect, useState } from "react";
 import CommentItem from "./CommentItem";
 import firestore from "@react-native-firebase/firestore";
+import { addComment } from "../firebase/service";
 
 function SheetComments() {
     const sheetData = useSheetPayload("SheetComments");
+
     const [inputPosition, setInputPosition] = useState(0);
     const [commentValue, setCommentValue] = useState("");
     const [commentSnapshot, setCommentSnapshot] = useState([]);
+
+    const handleAddComment = async () => {
+        await addComment(sheetData.blogId, commentValue, sheetData.authUser);
+        setCommentValue("");
+    };
 
     useEffect(() => {
         const unsubscribe = firestore()
@@ -133,7 +140,7 @@ function SheetComments() {
                         <CountReact showSheet authUser={sheetData.authUser} blogId={sheetData.blogId} />
                     </View>
                     {commentSnapshot.map((item, index) => {
-                        return <CommentItem key={index} comment={item} />;
+                        return <CommentItem key={index} comment={item} authUser={sheetData.authUser} blogId={sheetData.blogId} />;
                     })}
                 </ScrollView>
                 <View
@@ -161,13 +168,19 @@ function SheetComments() {
                             textAlignVertical="top"
                             multiline={false}
                             onChangeText={(e) => setCommentValue(e)}
+                            value={commentValue}
                             autoFocus
                             placeholder="Bình luận"
                             style={{ height: 35, flex: 1, paddingVertical: 8, paddingHorizontal: 8 }}
                         />
                     </View>
                     <View>
-                        <Button disabled={commentValue.trim() === ""} radius={9999} buttonStyle={{ width: 38, height: 38, backgroundColor: "#007DFDFF" }}>
+                        <Button
+                            disabled={commentValue.trim() === ""}
+                            radius={9999}
+                            onPress={handleAddComment}
+                            buttonStyle={{ width: 38, height: 38, backgroundColor: "#007DFDFF" }}
+                        >
                             <Ionicons name="send" size={20} color="#fff" />
                         </Button>
                     </View>

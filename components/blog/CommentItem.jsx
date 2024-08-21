@@ -3,14 +3,22 @@ import { View, ImageBackground, Text, Pressable, TextInput, Keyboard, KeyboardAv
 import { Button } from "@rneui/themed";
 import ActionSheet, { ScrollView, useSheetPayload, SheetManager } from "react-native-actions-sheet";
 import FastImage from "react-native-fast-image";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import CountReact from "./CountReact";
+import { Dialog, CheckBox, ListItem, Avatar } from "@rneui/themed";
 import { useEffect, useState } from "react";
+import { deleteComment } from "../firebase/service";
 
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 
-const CommentItem = ({ comment }) => {
-    console.log(comment);
+const CommentItem = ({ comment, authUser, blogId }) => {
+    const [visible2, setVisible2] = useState(false);
+    const toggleDialog2 = () => {
+        setVisible2(!visible2);
+    };
+
+    const handleDeleteComment = async () => {
+        await deleteComment(blogId, comment.id);
+        setVisible2(false);
+    };
     const handleConvertDate = (timestamp) => {
         if (timestamp) {
             const date = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
@@ -48,13 +56,24 @@ const CommentItem = ({ comment }) => {
                             <Text style={{ fontSize: 16, fontWeight: "500" }}>{comment.displayName}</Text>
                             <Text style={{ fontSize: 13, color: "#999" }}>{handleConvertDate(comment?.sendTime)}</Text>
                         </View>
-                        <View>
-                            <Button type="clear" radius={9999} buttonStyle={{ width: 34, height: 34 }}>
-                                <SimpleLineIcons name="options" size={14} color="black" />
-                            </Button>
-                        </View>
+                        {authUser.uid === comment.uid && (
+                            <View>
+                                <Button type="clear" radius={9999} onPress={toggleDialog2} buttonStyle={{ width: 34, height: 34 }}>
+                                    <SimpleLineIcons name="options" size={14} color="black" />
+                                </Button>
+                                <Dialog isVisible={visible2} onBackdropPress={toggleDialog2}>
+                                    <Dialog.Title title="Tùy chọn" />
+                                    <Button type="outline" onPress={handleDeleteComment} buttonStyle={{ marginBottom: 8 }} titleStyle={{ color: "red" }} radius={"md"}>
+                                        Xóa bình luận
+                                    </Button>
+                                    <Button onPress={toggleDialog2} type="outline" radius={"md"}>
+                                        Đóng
+                                    </Button>
+                                </Dialog>
+                            </View>
+                        )}
                     </View>
-                    <Text>{comment.comment}</Text>
+                    <Text>{comment.comment.replace(/\|\~n\|/g, "\n")}</Text>
                 </View>
             </View>
         </View>

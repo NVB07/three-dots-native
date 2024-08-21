@@ -20,8 +20,8 @@ function SheetOption() {
             },
             {
                 text: "Xóa",
-                onPress: () => {
-                    deleteBlog(sheetData.blogId);
+                onPress: async () => {
+                    await deleteBlog(sheetData.blogId);
                     SheetManager.hide("SheetOption");
                 },
             },

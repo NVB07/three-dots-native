@@ -37,3 +37,33 @@ export async function deleteBlog(blogId) {
         return false;
     }
 }
+
+export async function addComment(blogId, comment, authUser) {
+    try {
+        const newComment = {
+            comment: comment,
+            uid: authUser.uid,
+            displayName: authUser.displayName,
+            photoURL: authUser.photoURL,
+            sendTime: firestore.FieldValue.serverTimestamp(),
+        };
+
+        await firestore().collection("blogs").doc(blogId).collection("comments").add(newComment);
+
+        console.log("Comment added!");
+        return true;
+    } catch (error) {
+        console.error("Error adding comment: ", error);
+        return false;
+    }
+}
+export async function deleteComment(blogId, commentId) {
+    try {
+        await firestore().collection("blogs").doc(blogId).collection("comments").doc(commentId).delete();
+        console.log("comment deleted!");
+        return true;
+    } catch (error) {
+        console.error("Error comment delete: ", error);
+        return false;
+    }
+}

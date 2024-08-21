@@ -5,10 +5,7 @@ import FastImage from "react-native-fast-image";
 // import auth from "@react-native-firebase/auth";
 // import { ThemedText } from "../ThemedText";
 import Blog from "@/components/blog/Blog";
-import NewBlogSheet from "@/components/newBlog/NewBlogSheet";
-import { Button } from "@rneui/themed";
 import { SheetManager } from "react-native-actions-sheet";
-import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { AuthContext } from "@/components/context/AuthProvider";
 
 function HomePage() {

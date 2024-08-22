@@ -9,7 +9,7 @@ import { SheetManager } from "react-native-actions-sheet";
 import { AuthContext } from "@/components/context/AuthProvider";
 
 function HomePage() {
-    const { authUser, setAuthUser } = useContext(AuthContext);
+    const { authUser } = useContext(AuthContext);
     const [blogs, setBlogs] = useState([]);
 
     const showUser = () => {
@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
     scroll: {
         flex: 1,
         padding: 12,
+        paddingBottom: 30,
     },
     headerText: {
         fontSize: 16,

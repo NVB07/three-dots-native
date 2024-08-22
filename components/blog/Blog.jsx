@@ -7,7 +7,7 @@ import FastImage from "react-native-fast-image";
 import CountReact from "./CountReact";
 import { Button } from "@rneui/base";
 
-const Blog = ({ blogId, authUser }) => {
+const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
     const [blogData, setBlogData] = useState(null);
     const [authorData, setAuthorData] = useState(); // dữ liệu cá nhân tác giả
     const [isMyBlog, setIsMyBlog] = useState(false);
@@ -66,7 +66,7 @@ const Blog = ({ blogId, authUser }) => {
             <View style={styles.blog}>
                 <View style={styles.avatar}>
                     {authorData?.photoURL && (
-                        <Link href={`/user/${authorData?.uid}`}>
+                        <Link href={inMyUserPage ? "user" : `/user/${authorData?.uid}`}>
                             <FastImage
                                 style={{ width: 36, height: 36, borderRadius: 9999 }}
                                 source={{
@@ -81,7 +81,7 @@ const Blog = ({ blogId, authUser }) => {
                 <View style={styles.rightContent}>
                     <View style={styles.header}>
                         <View>
-                            <Link href={`/user/${authorData?.uid}`}>
+                            <Link href={inMyUserPage ? "user" : `/user/${authorData?.uid}`}>
                                 <Text style={styles.userName}>{authorData?.displayName}</Text>
                             </Link>
                             <Text style={styles.postTime}>{blogData?.createAt && handleConvertDate(blogData?.createAt)}</Text>
@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         overflow: "hidden",
         position: "relative",
+        marginBottom: 10,
     },
     blog: {
         flex: 2,

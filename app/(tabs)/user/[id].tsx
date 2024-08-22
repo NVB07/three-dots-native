@@ -6,7 +6,7 @@ export default function User() {
     const { id } = useLocalSearchParams();
 
     return (
-        <View style={{ paddingTop: 40, flex: 1, padding: 12 }}>
+        <View style={{ paddingTop: 40, flex: 1 }}>
             <UserPage uid={id} />
         </View>
     );

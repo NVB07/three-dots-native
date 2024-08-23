@@ -1,4 +1,4 @@
-import { View, ScrollView, Pressable, Text } from "react-native";
+import { View, ScrollView, Pressable, Text, Alert } from "react-native";
 import { Button } from "@rneui/base";
 import { useNavigation } from "@react-navigation/native";
 import FastImage from "react-native-fast-image";
@@ -6,6 +6,8 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { useState, useEffect, useContext } from "react";
 import firestore from "@react-native-firebase/firestore";
 import Blog from "@/components/blog/Blog";
+import Feather from "@expo/vector-icons/Feather";
+import auth from "@react-native-firebase/auth";
 
 import { AuthContext } from "@/components/context/AuthProvider";
 
@@ -15,6 +17,29 @@ const UserPage = ({ uid, userTabClick = false }) => {
     const [userData, setUserData] = useState();
     const [userBlog, setUserBlog] = useState([]);
     const navigation = useNavigation();
+
+    const alertSignOut = () => {
+        Alert.alert(
+            "Đăng xuất", // Tiêu đề của alert
+            "Bạn có muốn đăng xuất tài khoản ?",
+            [
+                {
+                    text: "Hủy",
+                    onPress: () => console.log("Hủy bỏ"),
+                    style: "cancel",
+                },
+                {
+                    text: "Đăng xuất",
+                    style: "destructive",
+                    onPress: () =>
+                        auth()
+                            .signOut()
+                            .then(() => console.log("User signed out!")),
+                },
+            ],
+            { cancelable: false }
+        );
+    };
 
     useEffect(() => {
         const subscriberUser = firestore()
@@ -44,6 +69,10 @@ const UserPage = ({ uid, userTabClick = false }) => {
         };
     }, [uid]);
 
+    const handleGoBack = () => {
+        navigation.goBack();
+    };
+
     return (
         <View style={{ paddingBottom: 30 }}>
             <View
@@ -64,7 +93,7 @@ const UserPage = ({ uid, userTabClick = false }) => {
                             left: 12,
                         }}
                         icon={<AntDesign name="arrowleft" size={24} color="black" />}
-                        onPress={() => navigation.goBack()}
+                        onPress={handleGoBack}
                     />
                 )}
                 <Text style={{ fontSize: 16, fontWeight: "bold" }}> {userData?.displayName}</Text>
@@ -88,7 +117,18 @@ const UserPage = ({ uid, userTabClick = false }) => {
                     </View>
                 </View>
                 <View style={{ width: "100%", borderBottomWidth: 1, borderColor: "#ccc", paddingBottom: 20 }}>
-                    {!myUserPage ? <Button radius={"md"}>Nhắn tin</Button> : <Button radius={"md"}>Sửa thông tin</Button>}
+                    {!myUserPage ? (
+                        <Button radius={"md"}>Nhắn tin</Button>
+                    ) : (
+                        <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
+                            <Button titleStyle={{ color: "#000" }} buttonStyle={{ backgroundColor: "#C0C0C0FF" }} containerStyle={{ width: "80%" }} radius={"md"}>
+                                Sửa thông tin
+                            </Button>
+                            <Button onPress={alertSignOut} type="clear" buttonStyle={{ height: 40 }} containerStyle={{ width: "17%", height: 40 }} radius={"md"}>
+                                <Feather name="log-out" size={24} color="red" />
+                            </Button>
+                        </View>
+                    )}
                 </View>
 
                 <View style={{ width: "100%" }}>

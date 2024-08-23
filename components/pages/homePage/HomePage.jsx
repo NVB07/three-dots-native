@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import firestore from "@react-native-firebase/firestore";
-import { StyleSheet, ScrollView, View, Text, Pressable } from "react-native";
+import { StyleSheet, ScrollView, View, Text, Pressable, ImageBackground } from "react-native";
 import FastImage from "react-native-fast-image";
 // import auth from "@react-native-firebase/auth";
 // import { ThemedText } from "../ThemedText";
@@ -34,44 +34,47 @@ function HomePage() {
 
     return (
         <View style={styles.main}>
-            <ScrollView style={styles.scroll}>
-                <View style={styles.header}>
-                    <Pressable
-                        type="clear"
-                        onPress={() =>
-                            SheetManager.show("NewBlogSheet", {
-                                payload: authUser,
-                            })
-                        }
-                        radius={"sm"}
-                        style={({ pressed }) => [
-                            {
-                                backgroundColor: pressed ? "#C2C2C2FF" : "#D8D8D8FF",
-                            },
-                            styles.buttonNewBlog,
-                        ]}
-                    >
-                        <View style={styles.newBlogAction}>
-                            <FastImage
-                                style={styles.avatar}
-                                source={{
-                                    uri: authUser?.photoURL,
-                                    priority: FastImage.priority.low,
-                                }}
-                                resizeMode={FastImage.resizeMode.cover}
-                            />
-                            <View>
-                                <Text style={styles.headerText}>{authUser?.displayName}</Text>
-                                <Text style={{ color: "#999", marginLeft: 6 }}>Thêm bài viết</Text>
+            <ImageBackground source={require("@/assets/images/bg-login.jpg")} style={{ width: "100%", flex: 1 }}>
+                <View style={styles.overlay} />
+                <ScrollView style={styles.scroll}>
+                    <View style={styles.header}>
+                        <Pressable
+                            type="clear"
+                            onPress={() =>
+                                SheetManager.show("NewBlogSheet", {
+                                    payload: authUser,
+                                })
+                            }
+                            radius={"sm"}
+                            style={({ pressed }) => [
+                                {
+                                    backgroundColor: pressed ? "#C2C2C2FF" : "#D8D8D8FF",
+                                },
+                                styles.buttonNewBlog,
+                            ]}
+                        >
+                            <View style={styles.newBlogAction}>
+                                <FastImage
+                                    style={styles.avatar}
+                                    source={{
+                                        uri: authUser?.photoURL,
+                                        priority: FastImage.priority.low,
+                                    }}
+                                    resizeMode={FastImage.resizeMode.cover}
+                                />
+                                <View>
+                                    <Text style={styles.headerText}>{authUser?.displayName}</Text>
+                                    <Text style={{ color: "#999", marginLeft: 6 }}>Thêm bài viết</Text>
+                                </View>
                             </View>
-                        </View>
-                    </Pressable>
-                </View>
+                        </Pressable>
+                    </View>
 
-                {blogs.map((blogId, index) => {
-                    return <Blog blogId={blogId} key={index} authUser={authUser} />;
-                })}
-            </ScrollView>
+                    {blogs.map((blogId, index) => {
+                        return <Blog blogId={blogId} key={index} authUser={authUser} />;
+                    })}
+                </ScrollView>
+            </ImageBackground>
         </View>
     );
 }
@@ -81,6 +84,10 @@ export default HomePage;
 const styles = StyleSheet.create({
     main: {
         flex: 1,
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: "rgba(255,255,255,0.7)",
     },
     header: {
         backgroundColor: "#D8D8D8FF",

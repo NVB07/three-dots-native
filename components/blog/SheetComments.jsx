@@ -1,5 +1,5 @@
 import React from "react";
-import { View, ImageBackground, Text, Pressable, TextInput, Keyboard, KeyboardAvoidingView, Platform } from "react-native";
+import { View, ImageBackground, Text, Pressable, TextInput, Keyboard, KeyboardAvoidingView, Platform, Image } from "react-native";
 import { Button } from "@rneui/themed";
 import ActionSheet, { ScrollView, useSheetPayload, SheetManager } from "react-native-actions-sheet";
 import FastImage from "react-native-fast-image";
@@ -12,7 +12,7 @@ import { addComment } from "../firebase/service";
 
 function SheetComments() {
     const sheetData = useSheetPayload("SheetComments");
-
+    const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
     const [inputPosition, setInputPosition] = useState(0);
     const [commentValue, setCommentValue] = useState("");
     const [commentSnapshot, setCommentSnapshot] = useState([]);
@@ -21,6 +21,20 @@ function SheetComments() {
         await addComment(sheetData.blogId, commentValue, sheetData.authUser);
         setCommentValue("");
     };
+
+    useEffect(() => {
+        if (sheetData?.blogData.post.imageURL) {
+            Image.getSize(
+                sheetData?.blogData.post.imageURL,
+                (width, height) => {
+                    setImageSize({ width: 350, height: (height / width) * 385 });
+                },
+                (error) => {
+                    console.error("Error getting image size:", error);
+                }
+            );
+        }
+    }, [sheetData?.blogData.post.imageURL]);
 
     useEffect(() => {
         const unsubscribe = firestore()
@@ -123,18 +137,16 @@ function SheetComments() {
                         </View>
                         {sheetData?.blogData.post.content && <Text style={{ fontSize: 16, marginBottom: 2 }}>{sheetData?.blogData.post.normalText}</Text>}
                         {sheetData?.blogData.post.imageURL && (
-                            <View style={{ width: "100%", height: 350, marginBottom: 10 }}>
-                                <ImageBackground source={require("@/assets/images/background.jpg")} style={{ width: "100%", height: 350 }}>
-                                    <FastImage
-                                        style={{ width: "100%", height: "100%", padding: 0, maxHeight: 350 }}
-                                        overflow="hidden"
-                                        source={{
-                                            uri: sheetData?.blogData.post.imageURL,
-                                            priority: FastImage.priority.normal,
-                                        }}
-                                        resizeMode={FastImage.resizeMode.contain}
-                                    />
-                                </ImageBackground>
+                            <View style={{ width: 385, height: imageSize.height, marginBottom: 10 }}>
+                                <FastImage
+                                    style={{ width: "100%", height: "100%", padding: 0, borderRadius: 8 }}
+                                    overflow="hidden"
+                                    source={{
+                                        uri: sheetData?.blogData.post.imageURL,
+                                        priority: FastImage.priority.normal,
+                                    }}
+                                    resizeMode={FastImage.resizeMode.contain}
+                                />
                             </View>
                         )}
                         <CountReact showSheet authUser={sheetData.authUser} blogId={sheetData.blogId} />
@@ -158,6 +170,7 @@ function SheetComments() {
                             borderWidth: 1,
                             borderColor: "#ccc",
                             borderRadius: 99999,
+                            marginBottom: 8,
                             flexDirection: "row",
                             alignItems: "center",
                             width: "87%",
@@ -169,7 +182,7 @@ function SheetComments() {
                             multiline={false}
                             onChangeText={(e) => setCommentValue(e)}
                             value={commentValue}
-                            autoFocus
+                            // autoFocus
                             placeholder="Bình luận"
                             style={{ height: 35, flex: 1, paddingVertical: 8, paddingHorizontal: 8 }}
                         />
@@ -179,7 +192,7 @@ function SheetComments() {
                             disabled={commentValue.trim() === ""}
                             radius={9999}
                             onPress={handleAddComment}
-                            buttonStyle={{ width: 38, height: 38, backgroundColor: "#007DFDFF" }}
+                            buttonStyle={{ width: 38, height: 38, backgroundColor: "#007DFDFF", marginBottom: 8 }}
                         >
                             <Ionicons name="send" size={20} color="#fff" />
                         </Button>

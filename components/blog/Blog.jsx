@@ -1,16 +1,18 @@
 import firestore from "@react-native-firebase/firestore";
 import { Link } from "expo-router";
-import { StyleSheet, Text, View, ImageBackground, Pressable } from "react-native";
+import { StyleSheet, Text, View, Image, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
 import Option from "./Option";
 import FastImage from "react-native-fast-image";
 import CountReact from "./CountReact";
 import { Button } from "@rneui/base";
+import { SheetManager } from "react-native-actions-sheet";
 
 const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
     const [blogData, setBlogData] = useState(null);
     const [authorData, setAuthorData] = useState(); // dữ liệu cá nhân tác giả
     const [isMyBlog, setIsMyBlog] = useState(false);
+    const [comments, setComments] = useState();
 
     const handleConvertDate = (timestamp) => {
         if (timestamp) {
@@ -32,7 +34,28 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
     };
 
     useEffect(() => {
-        const subscriber = firestore()
+        const unsubscribeComment = firestore()
+            .collection("blogs")
+            .doc(blogId)
+            .collection("comments")
+            .orderBy("sendTime", "desc")
+            .onSnapshot(
+                (querySnapshot) => {
+                    if (!querySnapshot.empty) {
+                        const commentsData = querySnapshot.docs.map((doc) => ({
+                            id: doc.id,
+                            ...doc.data(),
+                        }));
+                        setComments(commentsData);
+                    } else {
+                        setComments([]);
+                    }
+                },
+                (error) => {
+                    console.error("Error fetching comments: ", error);
+                }
+            );
+        const subscriberBlogData = firestore()
             .collection("blogs")
             .doc(blogId)
             .onSnapshot((documentSnapshot) => {
@@ -41,13 +64,15 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
                     setBlogData(data);
                 }
             });
-        return () => subscriber();
+        return () => {
+            subscriberBlogData();
+            unsubscribeComment();
+        };
     }, [blogId]);
 
     useEffect(() => {
         if (blogData?.author.uid) {
             setIsMyBlog(authUser.uid === blogData.author.uid);
-            // console.log(authUser.uid === blogData.author.uid);
 
             const subscriber = firestore()
                 .collection("users")
@@ -88,23 +113,26 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
                         </View>
                         <Option isMyBlog={isMyBlog} authUser={authUser} blogData={blogData} blogId={blogId} />
                     </View>
-                    {blogData?.post.content && <Text style={styles.content}>{blogData?.post.normalText}</Text>}
+                    <Pressable
+                        style={{ width: "100%" }}
+                        onPress={() => SheetManager.show("SheetComments", { payload: { blogData, blogId, comments, authorData, authUser } })}
+                    >
+                        {blogData?.post.content && <Text style={styles.content}>{blogData?.post.normalText}</Text>}
 
-                    {blogData?.post.imageURL && (
-                        <View style={styles.imageContainer}>
-                            <ImageBackground source={require("@/assets/images/background.jpg")} style={styles.imageBackground}>
+                        {blogData?.post.imageURL && (
+                            <View style={styles.imageContainer}>
                                 <FastImage
-                                    style={{ width: "100%", height: "100%", padding: 0, maxHeight: 350 }}
+                                    style={{ width: "100%", height: "100%", padding: 0, maxHeight: 320, borderRadius: 8 }}
                                     overflow="hidden"
                                     source={{
                                         uri: blogData?.post.imageURL,
                                         priority: FastImage.priority.normal,
                                     }}
-                                    resizeMode={FastImage.resizeMode.contain}
+                                    resizeMode={FastImage.resizeMode.cover}
                                 />
-                            </ImageBackground>
-                        </View>
-                    )}
+                            </View>
+                        )}
+                    </Pressable>
                     <View style={{ marginTop: 20 }}>
                         <CountReact authUser={authUser} blogId={blogId} blogData={blogData} authorData={authorData} />
                     </View>
@@ -117,14 +145,15 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
 export default Blog;
 const styles = StyleSheet.create({
     main: {
-        paddingTop: 12,
-        paddingBottom: 12,
-        borderBottomWidth: 1,
+        padding: 12,
+        borderWidth: 1,
+        borderRadius: 12,
         borderColor: "#ccc",
         flexDirection: "row",
         overflow: "hidden",
         position: "relative",
-        marginBottom: 10,
+        marginBottom: 12,
+        backgroundColor: "rgba(255,255,255,0.8)",
     },
     blog: {
         flex: 2,
@@ -146,7 +175,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     rightContent: {
-        width: 350,
+        width: 320,
         marginLeft: 4,
         flex: 1,
     },
@@ -173,16 +202,15 @@ const styles = StyleSheet.create({
     imageContainer: {
         marginTop: 6,
         flex: 1,
-
         width: "100%",
-        height: 350,
+        height: 320,
         display: "flex",
         justifyContent: "flex-start",
         alignItems: "flex-start",
     },
     imageBackground: {
         width: "100%",
-        height: 350,
+        height: 320,
     },
     image: {
         flex: 1,

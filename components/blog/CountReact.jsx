@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import firestore from "@react-native-firebase/firestore";
 import { SheetManager } from "react-native-actions-sheet";
 
-const CountReact = ({ authUser, blogId, blogData, authorData, showSheet = false }) => {
+const CountReact = ({ authUser, blogId, blogData, authorData, showSheet = false, setCommentsChild }) => {
     const [liked, setLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const [countComment, setCountComment] = useState(0);
@@ -46,6 +46,7 @@ const CountReact = ({ authUser, blogId, blogData, authorData, showSheet = false 
 
                             setCountComment(commentsData.length);
                             setComments(commentsData);
+                            // setCommentsChild(commentsData);
                         } else {
                             setCountComment(0);
                             setComments([]);

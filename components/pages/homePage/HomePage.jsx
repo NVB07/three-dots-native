@@ -34,47 +34,44 @@ function HomePage() {
 
     return (
         <View style={styles.main}>
-            <ImageBackground source={require("@/assets/images/bg-login.jpg")} style={{ width: "100%", flex: 1 }}>
-                <View style={styles.overlay} />
-                <ScrollView style={styles.scroll}>
-                    <View style={styles.header}>
-                        <Pressable
-                            type="clear"
-                            onPress={() =>
-                                SheetManager.show("NewBlogSheet", {
-                                    payload: authUser,
-                                })
-                            }
-                            radius={"sm"}
-                            style={({ pressed }) => [
-                                {
-                                    backgroundColor: pressed ? "#C2C2C2FF" : "#D8D8D8FF",
-                                },
-                                styles.buttonNewBlog,
-                            ]}
-                        >
-                            <View style={styles.newBlogAction}>
-                                <FastImage
-                                    style={styles.avatar}
-                                    source={{
-                                        uri: authUser?.photoURL,
-                                        priority: FastImage.priority.low,
-                                    }}
-                                    resizeMode={FastImage.resizeMode.cover}
-                                />
-                                <View>
-                                    <Text style={styles.headerText}>{authUser?.displayName}</Text>
-                                    <Text style={{ color: "#999", marginLeft: 6 }}>Thêm bài viết</Text>
-                                </View>
+            <ScrollView style={styles.scroll}>
+                <View style={styles.header}>
+                    <Pressable
+                        type="clear"
+                        onPress={() =>
+                            SheetManager.show("NewBlogSheet", {
+                                payload: authUser,
+                            })
+                        }
+                        radius={"sm"}
+                        style={({ pressed }) => [
+                            {
+                                backgroundColor: pressed ? "#C2C2C2FF" : "#D8D8D8FF",
+                            },
+                            styles.buttonNewBlog,
+                        ]}
+                    >
+                        <View style={styles.newBlogAction}>
+                            <FastImage
+                                style={styles.avatar}
+                                source={{
+                                    uri: authUser?.photoURL,
+                                    priority: FastImage.priority.low,
+                                }}
+                                resizeMode={FastImage.resizeMode.cover}
+                            />
+                            <View>
+                                <Text style={styles.headerText}>{authUser?.displayName}</Text>
+                                <Text style={{ color: "#999", marginLeft: 6 }}>Thêm bài viết</Text>
                             </View>
-                        </Pressable>
-                    </View>
+                        </View>
+                    </Pressable>
+                </View>
 
-                    {blogs.map((blogId, index) => {
-                        return <Blog blogId={blogId} key={index} authUser={authUser} />;
-                    })}
-                </ScrollView>
-            </ImageBackground>
+                {blogs.map((blogId, index) => {
+                    return <Blog blogId={blogId} key={index} authUser={authUser} />;
+                })}
+            </ScrollView>
         </View>
     );
 }

@@ -1,4 +1,4 @@
-import { View, ScrollView, Pressable, Text, Alert } from "react-native";
+import { View, ScrollView, Pressable, Text, Alert, TextInput } from "react-native";
 import { Button } from "@rneui/base";
 import { useNavigation } from "@react-navigation/native";
 import FastImage from "react-native-fast-image";
@@ -8,6 +8,7 @@ import firestore from "@react-native-firebase/firestore";
 import Blog from "@/components/blog/Blog";
 import Feather from "@expo/vector-icons/Feather";
 import auth from "@react-native-firebase/auth";
+import { useRouter } from "expo-router";
 
 import { AuthContext } from "@/components/context/AuthProvider";
 
@@ -17,6 +18,19 @@ const UserPage = ({ uid, userTabClick = false }) => {
     const [userData, setUserData] = useState();
     const [userBlog, setUserBlog] = useState([]);
     const navigation = useNavigation();
+    const router = useRouter();
+
+    const [isVisible, setIsVisible] = useState(false);
+    const list = [
+        { title: "List Item 1" },
+        { title: "List Item 2" },
+        {
+            title: "Cancel",
+            containerStyle: { backgroundColor: "red" },
+            titleStyle: { color: "white" },
+            onPress: () => setIsVisible(false),
+        },
+    ];
 
     const alertSignOut = () => {
         Alert.alert(
@@ -116,12 +130,18 @@ const UserPage = ({ uid, userTabClick = false }) => {
                         />
                     </View>
                 </View>
-                <View style={{ width: "100%", borderBottomWidth: 1, borderColor: "#ccc", paddingBottom: 20 }}>
+                <View style={{ width: "100%", borderBottomWidth: 1, borderColor: "#ccc", paddingBottom: 20, marginBottom: 20 }}>
                     {!myUserPage ? (
                         <Button radius={"md"}>Nhắn tin</Button>
                     ) : (
                         <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
-                            <Button titleStyle={{ color: "#000" }} buttonStyle={{ backgroundColor: "#C0C0C0FF" }} containerStyle={{ width: "80%" }} radius={"md"}>
+                            <Button
+                                onPress={() => router.push(`/user/edit`)}
+                                titleStyle={{ color: "#000" }}
+                                buttonStyle={{ backgroundColor: "#C0C0C0FF" }}
+                                containerStyle={{ width: "80%" }}
+                                radius={"md"}
+                            >
                                 Sửa thông tin
                             </Button>
                             <Button onPress={alertSignOut} type="clear" buttonStyle={{ height: 40 }} containerStyle={{ width: "17%", height: 40 }} radius={"md"}>

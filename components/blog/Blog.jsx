@@ -91,7 +91,7 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
             <View style={styles.blog}>
                 <View style={styles.avatar}>
                     {authorData?.photoURL && (
-                        <Link href={inMyUserPage ? "user" : `/user/${authorData?.uid}`}>
+                        <Link href={`/userid/${authorData?.uid}`}>
                             <FastImage
                                 style={{ width: 36, height: 36, borderRadius: 9999 }}
                                 source={{
@@ -106,7 +106,7 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
                 <View style={styles.rightContent}>
                     <View style={styles.header}>
                         <View>
-                            <Link href={inMyUserPage ? "user" : `/user/${authorData?.uid}`}>
+                            <Link href={`/userid/${authorData?.uid}`}>
                                 <Text style={styles.userName}>{authorData?.displayName}</Text>
                             </Link>
                             <Text style={styles.postTime}>{blogData?.createAt && handleConvertDate(blogData?.createAt)}</Text>

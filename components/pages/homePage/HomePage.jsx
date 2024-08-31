@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import firestore from "@react-native-firebase/firestore";
-import { StyleSheet, ScrollView, View, Text, Pressable, ImageBackground } from "react-native";
+import { StyleSheet, ScrollView, View, Text, Pressable, RefreshControl } from "react-native";
 import FastImage from "react-native-fast-image";
 // import auth from "@react-native-firebase/auth";
 // import { ThemedText } from "../ThemedText";
@@ -11,11 +11,22 @@ import { AuthContext } from "@/components/context/AuthProvider";
 function HomePage() {
     const { authUser } = useContext(AuthContext);
     const [blogs, setBlogs] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
 
-    const showUser = () => {
-        console.log(authUser);
-        alert("User: " + authUser.displayName);
-    };
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        firestore()
+            .collection("blogs")
+            .orderBy("createAt", "desc")
+            .onSnapshot((querySnapshot) => {
+                let blogTempArray = [];
+                querySnapshot.forEach((documentSnapshot) => {
+                    blogTempArray.push(documentSnapshot.id);
+                });
+                setBlogs(blogTempArray);
+                setRefreshing(false);
+            });
+    }, []);
 
     useEffect(() => {
         const subscriber = firestore()
@@ -34,7 +45,7 @@ function HomePage() {
 
     return (
         <View style={styles.main}>
-            <ScrollView style={styles.scroll}>
+            <ScrollView style={styles.scroll} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
                 <View style={styles.header}>
                     <Pressable
                         type="clear"

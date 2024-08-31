@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+// import { Tabs, Stack } from "expo-router";
 import React, { useContext } from "react";
 import { View, TouchableOpacity } from "react-native";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
@@ -8,33 +8,130 @@ import { SheetManager } from "react-native-actions-sheet";
 
 import { AuthContext } from "@/components/context/AuthProvider";
 
+// function TabChild() {
+//     return (
+//         <Stack>
+//             {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
+//             <Stack.Screen name="+not-found" />
+//         </Stack>
+//     );
+// }
+// export default function TabLayout() {
+//     const { authUser } = useContext(AuthContext);
+//     const colorScheme = useColorScheme();
+
+//     return (
+//         <Tabs
+//             screenOptions={{
+//                 tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+//                 headerShown: false,
+//             }}
+//         >
+//             <Tabs.Screen
+//                 name="index"
+//                 options={{
+//                     title: "",
+//                     tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "home" : "home-outline"} color={color} />,
+//                 }}
+//             />
+//             <Tabs.Screen
+//                 name="notification"
+//                 options={{
+//                     title: "",
+//                     tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "notifications" : "notifications-outline"} color={color} />,
+//                 }}
+//             />
+//             <Tabs.Screen
+//                 name="add"
+//                 options={{
+//                     title: "",
+//                     tabBarButton: ({ accessibilityState, onPress }) => (
+//                         <View style={{ width: 70, alignItems: "center" }}>
+//                             <TouchableOpacity
+//                                 onPress={() => {
+//                                     SheetManager.show("NewBlogSheet", {
+//                                         payload: authUser,
+//                                     });
+//                                 }}
+//                                 style={{ borderRadius: 12, marginTop: 3, backgroundColor: "#D2D2D2FF", width: 35, height: 35, alignItems: "center" }}
+//                             >
+//                                 <TabBarIcon style={{ marginTop: 3 }} name={"add"} />
+//                             </TouchableOpacity>
+//                         </View>
+//                     ),
+//                 }}
+//             />
+//             <Tabs.Screen
+//                 name="chat"
+//                 options={{
+//                     title: "",
+//                     tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "chatbox" : "chatbox-outline"} color={color} />,
+//                 }}
+//             />
+
+//             <Tabs.Screen
+//                 name="user"
+//                 options={{
+//                     title: "",
+//                     tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "person" : "person-outline"} color={color} />,
+//                 }}
+//             />
+//             {/* <Tabs.Screen
+//                 name="user/[userid]/index"
+//                 options={{
+//                     href: null,
+//                 }}
+//             />
+//             <Tabs.Screen
+//                 name="user/edit"
+//                 options={{
+//                     href: null,
+//                 }}
+//             /> */}
+//         </Tabs>
+//     );
+// }
+
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import HomeScreen from ".";
+import ChatScreen from "./chat";
+import UserScreen from "./user";
+import AddBlog from "./add";
+import NotificationScreen from "./notification";
+
+const Tab = createBottomTabNavigator();
+const TabChild = createNativeStackNavigator();
+
 export default function TabLayout() {
     const { authUser } = useContext(AuthContext);
     const colorScheme = useColorScheme();
-
     return (
-        <Tabs
+        <Tab.Navigator
             screenOptions={{
-                tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
                 headerShown: false,
+                tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
             }}
         >
-            <Tabs.Screen
-                name="index"
+            <Tab.Screen
+                name="Home"
+                component={HomeScreen}
                 options={{
                     title: "",
                     tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "home" : "home-outline"} color={color} />,
                 }}
             />
-            <Tabs.Screen
-                name="notification"
+            <Tab.Screen
+                name="Notification"
+                component={NotificationScreen}
                 options={{
                     title: "",
                     tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "notifications" : "notifications-outline"} color={color} />,
                 }}
             />
-            <Tabs.Screen
-                name="add"
+            <Tab.Screen
+                name="New"
+                component={AddBlog}
                 options={{
                     title: "",
                     tabBarButton: ({ accessibilityState, onPress }) => (
@@ -53,33 +150,22 @@ export default function TabLayout() {
                     ),
                 }}
             />
-            <Tabs.Screen
-                name="chat"
+            <Tab.Screen
+                name="Chat"
+                component={ChatScreen}
                 options={{
                     title: "",
                     tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "chatbox" : "chatbox-outline"} color={color} />,
                 }}
             />
-
-            <Tabs.Screen
+            <Tab.Screen
                 name="user"
+                component={UserScreen}
                 options={{
                     title: "",
                     tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "person" : "person-outline"} color={color} />,
                 }}
             />
-            <Tabs.Screen
-                name="user/[id]"
-                options={{
-                    href: null,
-                }}
-            />
-            <Tabs.Screen
-                name="user/edit"
-                options={{
-                    href: null,
-                }}
-            />
-        </Tabs>
+        </Tab.Navigator>
     );
 }

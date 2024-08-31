@@ -2,7 +2,7 @@ import { View } from "react-native";
 import UserPage from "@/components/pages/userPage/UserPage";
 import { useContext } from "react";
 import { AuthContext } from "@/components/context/AuthProvider";
-export default function User() {
+export default function UserScreen() {
     const { authUser } = useContext(AuthContext);
 
     return (

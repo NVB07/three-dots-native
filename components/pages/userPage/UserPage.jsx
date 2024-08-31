@@ -1,9 +1,9 @@
-import { View, ScrollView, Pressable, Text, Alert, TextInput } from "react-native";
+import { View, ScrollView, Pressable, Text, Alert, TextInput, RefreshControl } from "react-native";
 import { Button } from "@rneui/base";
 import { useNavigation } from "@react-navigation/native";
 import FastImage from "react-native-fast-image";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import firestore from "@react-native-firebase/firestore";
 import Blog from "@/components/blog/Blog";
 import Feather from "@expo/vector-icons/Feather";
@@ -19,18 +19,35 @@ const UserPage = ({ uid, userTabClick = false }) => {
     const [userBlog, setUserBlog] = useState([]);
     const navigation = useNavigation();
     const router = useRouter();
+    const [refreshing, setRefreshing] = useState(false);
 
-    const [isVisible, setIsVisible] = useState(false);
-    const list = [
-        { title: "List Item 1" },
-        { title: "List Item 2" },
-        {
-            title: "Cancel",
-            containerStyle: { backgroundColor: "red" },
-            titleStyle: { color: "white" },
-            onPress: () => setIsVisible(false),
-        },
-    ];
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        firestore()
+            .collection("users")
+            .doc(uid)
+            .get()
+            .then((documentSnapshot) => {
+                if (documentSnapshot.exists) {
+                    const data = documentSnapshot.data();
+                    setUserData(data);
+                }
+            });
+
+        firestore()
+            .collection("blogs")
+            .where("author.uid", "==", uid)
+            .orderBy("createAt", "desc")
+            .get()
+            .then((querySnapshot) => {
+                let blogTempArray = [];
+                querySnapshot.forEach((documentSnapshot) => {
+                    blogTempArray.push(documentSnapshot.id);
+                });
+                setUserBlog(blogTempArray);
+            })
+            .finally(() => setRefreshing(false));
+    }, [uid]);
 
     const alertSignOut = () => {
         Alert.alert(
@@ -59,6 +76,7 @@ const UserPage = ({ uid, userTabClick = false }) => {
         const subscriberUser = firestore()
             .collection("users")
             .doc(uid)
+
             .onSnapshot((documentSnapshot) => {
                 if (documentSnapshot.exists) {
                     const data = documentSnapshot.data();
@@ -68,6 +86,7 @@ const UserPage = ({ uid, userTabClick = false }) => {
         const subscriberBlog = firestore()
             .collection("blogs")
             .where("author.uid", "==", uid)
+            .orderBy("createAt", "desc")
             .onSnapshot((querySnapshot) => {
                 let blogTempArray = [];
                 querySnapshot.forEach((documentSnapshot) => {
@@ -90,7 +109,18 @@ const UserPage = ({ uid, userTabClick = false }) => {
     return (
         <View style={{ paddingBottom: 30 }}>
             <View
-                style={{ width: "100%", height: 30, position: "relative", paddingHorizontal: 12, flexDirection: "row", alignItems: "center", justifyContent: "center" }}
+                style={{
+                    width: "100%",
+                    height: 30,
+                    position: "relative",
+                    paddingHorizontal: 12,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderBottomWidth: 1,
+                    borderBottomColor: "#ccc",
+                    paddingBottom: 8,
+                }}
             >
                 {!userTabClick && (
                     <Button
@@ -113,7 +143,7 @@ const UserPage = ({ uid, userTabClick = false }) => {
                 <Text style={{ fontSize: 16, fontWeight: "bold" }}> {userData?.displayName}</Text>
             </View>
 
-            <ScrollView style={{ padding: 12 }}>
+            <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} style={{ padding: 12 }}>
                 <View style={{ width: "100%", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 20 }}>
                     <View style={{ width: "70%" }}>
                         <Text style={{ fontSize: 18, fontWeight: "bold" }}>{userData?.displayName}</Text>
@@ -136,7 +166,7 @@ const UserPage = ({ uid, userTabClick = false }) => {
                     ) : (
                         <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
                             <Button
-                                onPress={() => router.push(`/user/edit`)}
+                                onPress={() => router.push(`/userid/edit`)}
                                 titleStyle={{ color: "#000" }}
                                 buttonStyle={{ backgroundColor: "#C0C0C0FF" }}
                                 containerStyle={{ width: "80%" }}

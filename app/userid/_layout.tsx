@@ -23,7 +23,7 @@ export default function UserLayout() {
     return (
         <Stack>
             <Stack.Screen name="[userid]/index" options={{ headerShown: false }} />
-            <Stack.Screen name="edit" />
+            <Stack.Screen name="edit" options={{ headerShown: false }} />
         </Stack>
     );
 }

@@ -21,7 +21,32 @@ export default async function onGoogleButtonPress() {
 
     // Create a Google credential with the token
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
+    const result = await auth().signInWithCredential(googleCredential);
     // Sign-in the user with the credential
-    return auth().signInWithCredential(googleCredential);
+    const { additionalUserInfo } = result;
+    if (additionalUserInfo?.isNewUser) {
+        // Người dùng mới, thực hiện hành động thêm document vào collection 'users'
+        const user = result.user;
+        await addUserToFirestore(user);
+    }
+
+    return result;
+}
+
+async function addUserToFirestore(user) {
+    const userData = {
+        displayName: user.displayName || "",
+        email: user.email || "",
+        threads: "",
+        facebook: "",
+        instagram: "",
+        tiktok: "",
+        x: "",
+        photoURL: user.photoURL || "",
+        uid: user.uid,
+        providerId: user.providerData[0]?.providerId,
+    };
+
+    // Thêm document vào collection 'users' với user.uid làm ID
+    await firestore().collection("users").doc(user.uid).set(userData);
 }

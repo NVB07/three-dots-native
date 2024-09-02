@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext, useCallback, memo } from "react";
 import firestore from "@react-native-firebase/firestore";
 import { StyleSheet, ScrollView, View, Text, Pressable, RefreshControl } from "react-native";
 import FastImage from "react-native-fast-image";
@@ -80,13 +80,14 @@ function HomePage() {
                 </View>
 
                 {blogs.map((blogId, index) => {
-                    return <Blog blogId={blogId} key={index} authUser={authUser} />;
+                    return <MemoizedBlogs blogId={blogId} key={index} authUser={authUser} />;
                 })}
+                <View style={{ width: "100%", height: 20 }}></View>
             </ScrollView>
         </View>
     );
 }
-
+const MemoizedBlogs = memo(Blog);
 export default HomePage;
 
 const styles = StyleSheet.create({

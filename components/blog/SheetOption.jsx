@@ -10,6 +10,19 @@ import { deleteBlog } from "../firebase/service";
 
 function SheetOption() {
     const sheetData = useSheetPayload("SheetOption");
+    const imageBlog = sheetData.blogData.post.imageURL;
+
+    const getPathImage = (imageBlog) => {
+        if (imageBlog) {
+            const startIndex = imageBlog.lastIndexOf("/") + 1;
+            const endIndex = imageBlog.indexOf("?alt=");
+            const encodedImagePath = imageBlog.substring(startIndex, endIndex);
+
+            const imagePath = decodeURIComponent(encodedImagePath).startsWith("imagePostBlogs") ? decodeURIComponent(encodedImagePath) : null;
+            return imagePath;
+        }
+        return null;
+    };
 
     const handleDeleteBlog = () => {
         Alert.alert("Xóa bài viết", "Việc xóa bài viết sẽ không thể khôi phục trong tương lai. Bạn có chắc muốn xóa ?", [
@@ -21,7 +34,7 @@ function SheetOption() {
             {
                 text: "Xóa",
                 onPress: async () => {
-                    await deleteBlog(sheetData.blogId);
+                    await deleteBlog(sheetData.blogId, getPathImage(imageBlog));
                     SheetManager.hide("SheetOption");
                 },
             },

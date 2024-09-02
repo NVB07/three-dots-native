@@ -62,6 +62,8 @@ const CountReact = ({ authUser, blogId, blogData, authorData, showSheet = false,
     }, [blogId]);
 
     const handleLikePost = () => {
+        console.log("like");
+
         setLiked((prev) => {
             firestore()
                 .collection("blogs")

@@ -9,6 +9,8 @@ import { Button } from "@rneui/base";
 import { SheetManager } from "react-native-actions-sheet";
 
 const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
+    // console.log(authUser);
+
     const [blogData, setBlogData] = useState(null);
     const [authorData, setAuthorData] = useState(); // dữ liệu cá nhân tác giả
     const [isMyBlog, setIsMyBlog] = useState(false);
@@ -91,7 +93,7 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
             <View style={styles.blog}>
                 <View style={styles.avatar}>
                     {authorData?.photoURL && (
-                        <Link href={`/userid/${authorData?.uid}`}>
+                        <Link href={!inMyUserPage ? `/userid/${authorData?.uid}` : ""}>
                             <FastImage
                                 style={{ width: 36, height: 36, borderRadius: 9999 }}
                                 source={{
@@ -106,7 +108,7 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
                 <View style={styles.rightContent}>
                     <View style={styles.header}>
                         <View>
-                            <Link href={`/userid/${authorData?.uid}`}>
+                            <Link href={!inMyUserPage ? `/userid/${authorData?.uid}` : ""}>
                                 <Text style={styles.userName}>{authorData?.displayName}</Text>
                             </Link>
                             <Text style={styles.postTime}>{blogData?.createAt && handleConvertDate(blogData?.createAt)}</Text>

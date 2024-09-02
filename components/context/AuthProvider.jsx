@@ -32,6 +32,7 @@ const AuthProvider = ({ children }) => {
                     }
                 });
         }
+        if (initializing) setInitializing(false);
     }, [currentUser]);
 
     if (initializing) return <Loading />;

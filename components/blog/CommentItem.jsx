@@ -1,4 +1,4 @@
-import React from "react";
+import firestore from "@react-native-firebase/firestore";
 import { View, ImageBackground, Text, Pressable, TextInput, Keyboard, KeyboardAvoidingView, Platform } from "react-native";
 import { Button } from "@rneui/themed";
 import ActionSheet, { ScrollView, useSheetPayload, SheetManager } from "react-native-actions-sheet";
@@ -10,7 +10,26 @@ import { deleteComment } from "../firebase/service";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 
 const CommentItem = ({ comment, authUser, blogId }) => {
+    console.log(comment.uid);
+
     const [visible2, setVisible2] = useState(false);
+    const [userComment, setuserComment] = useState(null);
+
+    useEffect(() => {
+        if (comment.uid) {
+            const subscriber = firestore()
+                .collection("users")
+                .doc(comment.uid)
+                .onSnapshot((documentSnapshot) => {
+                    if (documentSnapshot.exists) {
+                        const data = documentSnapshot.data();
+                        setuserComment(data);
+                    }
+                });
+            return subscriber;
+        }
+    }, [comment.uid]);
+
     const toggleDialog2 = () => {
         setVisible2(!visible2);
     };
@@ -44,7 +63,7 @@ const CommentItem = ({ comment, authUser, blogId }) => {
                     <FastImage
                         style={{ width: 36, height: 36, borderRadius: 9999 }}
                         source={{
-                            uri: comment.photoURL,
+                            uri: userComment?.photoURL,
                             priority: FastImage.priority.low,
                         }}
                         resizeMode={FastImage.resizeMode.cover}
@@ -53,7 +72,7 @@ const CommentItem = ({ comment, authUser, blogId }) => {
                 <View style={{ marginLeft: 4, paddingHorizontal: 8, paddingVertical: 4, backgroundColor: "#f2f2f3", borderRadius: 15, width: "90%" }}>
                     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                         <View>
-                            <Text style={{ fontSize: 16, fontWeight: "500" }}>{comment.displayName}</Text>
+                            <Text style={{ fontSize: 16, fontWeight: "500" }}>{userComment?.displayName}</Text>
                             <Text style={{ fontSize: 13, color: "#999" }}>{handleConvertDate(comment?.sendTime)}</Text>
                         </View>
                         {authUser.uid === comment.uid && (

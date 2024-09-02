@@ -94,7 +94,7 @@ function NewBlogSheet() {
                 style={{
                     paddingHorizontal: 12,
                     paddingTop: 0,
-                    height: "100%",
+                    height: "95%",
                 }}
             >
                 <View style={{ width: "100%", justifyContent: "space-between", display: "flex", flexDirection: "row", alignItems: "center" }}>

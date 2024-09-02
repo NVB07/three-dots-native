@@ -98,14 +98,14 @@ function SheetComments() {
 
     return (
         <ActionSheet
-            keyboardHandlerEnabled={false}
+            keyboardHandlerEnabled={true}
             springOffset={300}
             gestureEnabled={true}
             indicatorStyle={{
                 width: 100,
             }}
         >
-            <View style={{ height: "100%", position: "relative", paddingBottom: inputPosition }}>
+            <View style={{ height: "95%", position: "relative", paddingBottom: inputPosition }}>
                 <View style={{ paddingHorizontal: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                     <Text style={{ fontWeight: "bold", fontSize: 16 }}>Bài viết của {sheetData?.authorData.displayName}</Text>
                     <View style={{ width: 60 }}>
@@ -157,7 +157,7 @@ function SheetComments() {
                 </ScrollView>
                 <View
                     style={{
-                        backgroundColor: "#fff",
+                        backgroundColor: "#ccc",
                         width: "100%",
                         paddingHorizontal: 12,
                         flexDirection: "row",

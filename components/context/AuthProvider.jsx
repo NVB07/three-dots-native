@@ -9,7 +9,7 @@ export const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
     // Set an initializing state whilst Firebase connects
     const [initializing, setInitializing] = useState(true);
-    const [authUser, setAuthUser] = useState();
+    const [authUser, setAuthUser] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
 
     useEffect(() => {
@@ -21,18 +21,18 @@ const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         if (currentUser) {
-            firestore()
+            const subscriber = firestore()
                 .collection("users")
                 .doc(currentUser.uid)
                 .onSnapshot((documentSnapshot) => {
                     if (documentSnapshot.exists) {
                         const data = documentSnapshot.data();
                         setAuthUser(data);
-                        setInitializing(false);
                     }
+                    setInitializing(false);
                 });
+            return () => subscriber(); // unsubscribe on unmount
         }
-        if (initializing) setInitializing(false);
     }, [currentUser]);
 
     if (initializing) return <Loading />;

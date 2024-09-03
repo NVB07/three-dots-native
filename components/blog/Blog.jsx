@@ -7,9 +7,11 @@ import FastImage from "react-native-fast-image";
 import CountReact from "./CountReact";
 import { Button } from "@rneui/base";
 import { SheetManager } from "react-native-actions-sheet";
+import { useRouter } from "expo-router";
 
 const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
-    // console.log(authUser);
+    const router = useRouter();
+    const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
 
     const [blogData, setBlogData] = useState(null);
     const [authorData, setAuthorData] = useState(); // dữ liệu cá nhân tác giả
@@ -34,6 +36,20 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
         }
         return "00:00";
     };
+
+    useEffect(() => {
+        if (blogData?.post.imageURL) {
+            Image.getSize(
+                blogData.post.imageURL,
+                (width, height) => {
+                    setImageSize({ width: 350, height: (height / width) * 385 });
+                },
+                (error) => {
+                    console.error("Error getting image size:", error);
+                }
+            );
+        }
+    }, [blogData?.post.imageURL]);
 
     useEffect(() => {
         const unsubscribeComment = firestore()
@@ -117,7 +133,18 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
                     </View>
                     <Pressable
                         style={{ width: "100%" }}
-                        onPress={() => SheetManager.show("SheetComments", { payload: { blogData, blogId, comments, authorData, authUser } })}
+                        onPress={() =>
+                            router.push({
+                                pathname: "/blogid/" + blogId,
+                                params: {
+                                    data: blogData ? encodeURIComponent(JSON.stringify(blogData)) : null,
+                                    author: authorData ? encodeURIComponent(JSON.stringify(authorData)) : null,
+                                    authUser: authUser ? encodeURIComponent(JSON.stringify(authUser)) : null,
+                                    comments: comments ? encodeURIComponent(JSON.stringify(comments)) : null,
+                                    imageSize: imageSize ? encodeURIComponent(JSON.stringify(imageSize)) : null,
+                                },
+                            })
+                        }
                     >
                         {blogData?.post.content && <Text style={styles.content}>{blogData?.post.normalText}</Text>}
 
@@ -136,7 +163,7 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
                         )}
                     </Pressable>
                     <View style={{ marginTop: 20 }}>
-                        <CountReact authUser={authUser} blogId={blogId} blogData={blogData} authorData={authorData} />
+                        <CountReact authUser={authUser} blogId={blogId} blogData={blogData} authorData={authorData} imageSize={imageSize} comments={comments} />
                     </View>
                 </View>
             </View>

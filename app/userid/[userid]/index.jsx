@@ -4,7 +4,6 @@ import UserPage from "@/components/pages/userPage/UserPage";
 
 export default function UserId() {
     const { userid } = useLocalSearchParams();
-    console.log(userid);
 
     return (
         <View style={{ paddingTop: 40, flex: 1 }}>

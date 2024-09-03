@@ -3,12 +3,14 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect } from "react";
 import firestore from "@react-native-firebase/firestore";
 import { SheetManager } from "react-native-actions-sheet";
+import { useRouter } from "expo-router";
 
-const CountReact = ({ authUser, blogId, blogData, authorData, showSheet = false, setCommentsChild }) => {
+const CountReact = ({ authUser, blogId, blogData, authorData, showSheet = false, imageSize, comments }) => {
+    const router = useRouter();
     const [liked, setLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const [countComment, setCountComment] = useState(0);
-    const [comments, setComments] = useState();
+    // const [comments, setComments] = useState();
 
     useEffect(() => {
         if (blogId) {
@@ -29,41 +31,39 @@ const CountReact = ({ authUser, blogId, blogData, authorData, showSheet = false,
             return () => unsubscribe();
         }
     }, [blogId]);
-    useEffect(() => {
-        if (blogId) {
-            const unsubscribe = firestore()
-                .collection("blogs")
-                .doc(blogId)
-                .collection("comments")
-                .orderBy("sendTime", "desc")
-                .onSnapshot(
-                    (querySnapshot) => {
-                        if (!querySnapshot.empty) {
-                            const commentsData = querySnapshot.docs.map((doc) => ({
-                                id: doc.id,
-                                ...doc.data(),
-                            }));
+    // useEffect(() => {
+    //     if (blogId) {
+    //         const unsubscribe = firestore()
+    //             .collection("blogs")
+    //             .doc(blogId)
+    //             .collection("comments")
+    //             .orderBy("sendTime", "desc")
+    //             .onSnapshot(
+    //                 (querySnapshot) => {
+    //                     if (!querySnapshot.empty) {
+    //                         const commentsData = querySnapshot.docs.map((doc) => ({
+    //                             id: doc.id,
+    //                             ...doc.data(),
+    //                         }));
 
-                            setCountComment(commentsData.length);
-                            setComments(commentsData);
-                            // setCommentsChild(commentsData);
-                        } else {
-                            setCountComment(0);
-                            setComments([]);
-                        }
-                    },
-                    (error) => {
-                        console.error("Error fetching comments: ", error);
-                    }
-                );
+    //                         setCountComment(commentsData.length);
+    //                         setComments(commentsData);
+    //                         // setCommentsChild(commentsData);
+    //                     } else {
+    //                         setCountComment(0);
+    //                         setComments([]);
+    //                     }
+    //                 },
+    //                 (error) => {
+    //                     console.error("Error fetching comments: ", error);
+    //                 }
+    //             );
 
-            return () => unsubscribe();
-        }
-    }, [blogId]);
+    //         return () => unsubscribe();
+    //     }
+    // }, [blogId]);
 
     const handleLikePost = () => {
-        console.log("like");
-
         setLiked((prev) => {
             firestore()
                 .collection("blogs")
@@ -87,7 +87,18 @@ const CountReact = ({ authUser, blogId, blogData, authorData, showSheet = false,
                     <View style={{ height: 24, width: 24, marginBottom: 4, marginLeft: 8 }}>
                         <Pressable
                             type="clear"
-                            onPress={() => SheetManager.show("SheetComments", { payload: { blogData, blogId, comments, authorData, authUser } })}
+                            onPress={() =>
+                                router.push({
+                                    pathname: "/blogid/" + blogId,
+                                    params: {
+                                        data: blogData ? encodeURIComponent(JSON.stringify(blogData)) : null,
+                                        author: authorData ? encodeURIComponent(JSON.stringify(authorData)) : null,
+                                        authUser: authUser ? encodeURIComponent(JSON.stringify(authUser)) : null,
+                                        comments: comments ? encodeURIComponent(JSON.stringify(comments)) : null,
+                                        imageSize: imageSize ? encodeURIComponent(JSON.stringify(imageSize)) : null,
+                                    },
+                                })
+                            }
                             radius={"sm"}
                             style={{}}
                         >

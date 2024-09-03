@@ -135,17 +135,3 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
 });
-
-// <View>
-//     <ThemedText>Welcome {authUser?.displayName}</ThemedText>
-//     <Button
-//         title="sign out"
-//         onPress={() =>
-//             auth()
-//                 .signOut()
-//                 .then(() => console.log("User signed out!"))
-//         }
-//     />
-//     <Button title="log" onPress={showUser} />
-//     <ThemedText>chao</ThemedText>
-// </View>

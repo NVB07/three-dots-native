@@ -10,8 +10,6 @@ import { deleteComment } from "../firebase/service";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 
 const CommentItem = ({ comment, authUser, blogId }) => {
-    console.log(comment.uid);
-
     const [visible2, setVisible2] = useState(false);
     const [userComment, setuserComment] = useState(null);
 
@@ -69,7 +67,7 @@ const CommentItem = ({ comment, authUser, blogId }) => {
                         resizeMode={FastImage.resizeMode.cover}
                     />
                 </View>
-                <View style={{ marginLeft: 4, paddingHorizontal: 8, paddingVertical: 4, backgroundColor: "#f2f2f3", borderRadius: 15, width: "90%" }}>
+                <View style={{ marginLeft: 4, paddingHorizontal: 12, paddingVertical: 4, paddingBottom: 8, backgroundColor: "#dcdcdc", borderRadius: 15, width: "90%" }}>
                     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                         <View>
                             <Text style={{ fontSize: 16, fontWeight: "500" }}>{userComment?.displayName}</Text>

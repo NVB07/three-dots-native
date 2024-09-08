@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, View, StyleSheet, Alert } from "react-native";
+import Clipboard from "@react-native-clipboard/clipboard";
 import ActionSheet, { useSheetPayload, SheetManager } from "react-native-actions-sheet";
 import { Button } from "@rneui/themed";
 import { useState } from "react";
@@ -41,6 +42,16 @@ function SheetOption() {
         ]);
     };
 
+    const handleCoppyLink = async () => {
+        try {
+            await Clipboard.setString("https://three-dots.vercel.app/blog/" + sheetData.blogId);
+            Alert.alert("Sao chép liên kết thành công!");
+            SheetManager.hide("SheetOption");
+        } catch (error) {
+            Alert.alert("Lỗi", "Không thể sao chép ");
+        }
+    };
+
     return (
         <ActionSheet
             gestureEnabled={true}
@@ -78,6 +89,7 @@ function SheetOption() {
                         iconPosition="left"
                         radius="md"
                         type="clear"
+                        onPress={handleCoppyLink}
                         buttonStyle={styles.buttonItem}
                         titleStyle={styles.titleStyle}
                     />

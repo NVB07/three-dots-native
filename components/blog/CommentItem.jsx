@@ -1,5 +1,6 @@
 import firestore from "@react-native-firebase/firestore";
 import { View, ImageBackground, Text, Pressable, TextInput, Keyboard, KeyboardAvoidingView, Platform } from "react-native";
+import { Link } from "expo-router";
 import { Button } from "@rneui/themed";
 import ActionSheet, { ScrollView, useSheetPayload, SheetManager } from "react-native-actions-sheet";
 import FastImage from "react-native-fast-image";
@@ -58,19 +59,23 @@ const CommentItem = ({ comment, authUser, blogId }) => {
         <View style={{ marginVertical: 8 }}>
             <View style={{ flexDirection: "row" }}>
                 <View style={{ height: "100%" }}>
-                    <FastImage
-                        style={{ width: 36, height: 36, borderRadius: 9999 }}
-                        source={{
-                            uri: userComment?.photoURL,
-                            priority: FastImage.priority.low,
-                        }}
-                        resizeMode={FastImage.resizeMode.cover}
-                    />
+                    <Link href={`/userid/${userComment?.uid}`}>
+                        <FastImage
+                            style={{ width: 36, height: 36, borderRadius: 9999 }}
+                            source={{
+                                uri: userComment?.photoURL,
+                                priority: FastImage.priority.low,
+                            }}
+                            resizeMode={FastImage.resizeMode.cover}
+                        />
+                    </Link>
                 </View>
                 <View style={{ marginLeft: 4, paddingHorizontal: 12, paddingVertical: 4, paddingBottom: 8, backgroundColor: "#dcdcdc", borderRadius: 15, width: "90%" }}>
                     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                         <View>
-                            <Text style={{ fontSize: 16, fontWeight: "500" }}>{userComment?.displayName}</Text>
+                            <Link href={`/userid/${userComment?.uid}`}>
+                                <Text style={{ fontSize: 16, fontWeight: "500" }}>{userComment?.displayName}</Text>
+                            </Link>
                             <Text style={{ fontSize: 13, color: "#999" }}>{handleConvertDate(comment?.sendTime)}</Text>
                         </View>
                         {authUser.uid === comment.uid && (

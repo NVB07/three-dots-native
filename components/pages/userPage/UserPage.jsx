@@ -118,8 +118,8 @@ const UserPage = ({ uid, userTabClick = false }) => {
                 <View style={{ width: "100%", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 20 }}>
                     <View style={{ width: "70%" }}>
                         <Text style={{ fontSize: 18, fontWeight: "bold" }}>{userData?.displayName}</Text>
-                        <View style={{ width: "100%", backgroundColor: "#fff", height: 30 }}>
-                            <SocialLink />
+                        <View style={{ width: "100%", height: 30 }}>
+                            <SocialLink userData={userData} />
                         </View>
                     </View>
                     <View style={{ width: "30%", alignItems: "flex-end" }}>

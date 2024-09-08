@@ -17,7 +17,14 @@ const EditProfile = ({ authUser, setAuthUser }) => {
     const [tiktok, setTiktok] = useState(authUser.tiktok);
     const [x, setX] = useState(authUser.x);
     const [loading, setLoading] = useState(false);
-    const [saveEnable, setSaveEnable] = useState(false);
+    const [saveDisable, setSaveDisable] = useState(false);
+
+    const facebookRegex = /^(https:\/\/(www\.)?facebook\.com\/).*/;
+    const gmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const instagramRegex = /^(https:\/\/(www\.)?instagram\.com\/).*/;
+    const threadsRegex = /^(https:\/\/(www\.)?threads\.net\/).*/;
+    const tiktokRegex = /^(https:\/\/(www\.)?tiktok\.com\/).*/;
+    const xRegex = /^(https:\/\/(www\.)?x\.com\/).*/;
 
     const handleDataFormat = () => {
         if (
@@ -30,19 +37,22 @@ const EditProfile = ({ authUser, setAuthUser }) => {
             tiktok === authUser.tiktok &&
             x === authUser.x
         ) {
-            setSaveEnable(true);
+            setSaveDisable(true);
         } else if (userName === "") {
-            setSaveEnable(true);
-        } else if (
-            (facebook !== "" && !facebook.startsWith("https://facebook.com/")) ||
-            (gmail !== "" && !gmail.includes("@")) ||
-            (instagram !== "" && !instagram.startsWith("https://instagram.com/")) ||
-            (threads !== "" && !threads.startsWith("https://threads.net/")) ||
-            (tiktok !== "" && !tiktok.startsWith("https://tiktok.com/")) ||
-            (x !== "" && !x.startsWith("https://x.com/"))
-        ) {
-            setSaveEnable(true);
-        } else setSaveEnable(false);
+            setSaveDisable(true);
+        } else if (gmail !== "" && !gmailRegex.test(gmail)) {
+            setSaveDisable(true);
+        } else if (facebook !== "" && !facebookRegex.test(facebook)) {
+            setSaveDisable(true);
+        } else if (instagram !== "" && !instagramRegex.test(instagram)) {
+            setSaveDisable(true);
+        } else if (threads !== "" && !threadsRegex.test(threads)) {
+            setSaveDisable(true);
+        } else if (tiktok !== "" && !tiktokRegex.test(tiktok)) {
+            setSaveDisable(true);
+        } else if (x !== "" && !xRegex.test(x)) {
+            setSaveDisable(true);
+        } else setSaveDisable(false);
     };
     useEffect(() => {
         handleDataFormat();
@@ -104,7 +114,7 @@ const EditProfile = ({ authUser, setAuthUser }) => {
     return (
         <View style={{ flex: 1, position: "relative" }}>
             <Button
-                disabled={saveEnable}
+                disabled={saveDisable}
                 onPress={saveInformation}
                 radius={12}
                 type="clear"

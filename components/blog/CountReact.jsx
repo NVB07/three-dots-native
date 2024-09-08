@@ -31,37 +31,36 @@ const CountReact = ({ authUser, blogId, blogData, authorData, showSheet = false,
             return () => unsubscribe();
         }
     }, [blogId]);
-    // useEffect(() => {
-    //     if (blogId) {
-    //         const unsubscribe = firestore()
-    //             .collection("blogs")
-    //             .doc(blogId)
-    //             .collection("comments")
-    //             .orderBy("sendTime", "desc")
-    //             .onSnapshot(
-    //                 (querySnapshot) => {
-    //                     if (!querySnapshot.empty) {
-    //                         const commentsData = querySnapshot.docs.map((doc) => ({
-    //                             id: doc.id,
-    //                             ...doc.data(),
-    //                         }));
+    useEffect(() => {
+        if (blogId) {
+            const unsubscribe = firestore()
+                .collection("blogs")
+                .doc(blogId)
+                .collection("comments")
+                .orderBy("sendTime", "desc")
+                .onSnapshot(
+                    (querySnapshot) => {
+                        if (!querySnapshot.empty) {
+                            const commentsData = querySnapshot.docs.map((doc) => ({
+                                id: doc.id,
+                                ...doc.data(),
+                            }));
 
-    //                         setCountComment(commentsData.length);
-    //                         setComments(commentsData);
-    //                         // setCommentsChild(commentsData);
-    //                     } else {
-    //                         setCountComment(0);
-    //                         setComments([]);
-    //                     }
-    //                 },
-    //                 (error) => {
-    //                     console.error("Error fetching comments: ", error);
-    //                 }
-    //             );
+                            setCountComment(commentsData.length);
 
-    //         return () => unsubscribe();
-    //     }
-    // }, [blogId]);
+                            // setCommentsChild(commentsData);
+                        } else {
+                            setCountComment(0);
+                        }
+                    },
+                    (error) => {
+                        console.error("Error fetching comments: ", error);
+                    }
+                );
+
+            return () => unsubscribe();
+        }
+    }, [blogId]);
 
     const handleLikePost = () => {
         setLiked((prev) => {

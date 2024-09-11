@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, TextInput } from "react-native";
 import HeaderBack from "@/components/headerBack/HeaderBack";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import FastImage from "react-native-fast-image";
 import { addComment } from "../../firebase/service";
 import firestore from "@react-native-firebase/firestore";

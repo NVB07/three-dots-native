@@ -3,7 +3,6 @@ import { Text, View, StyleSheet, Alert } from "react-native";
 import Clipboard from "@react-native-clipboard/clipboard";
 import ActionSheet, { useSheetPayload, SheetManager } from "react-native-actions-sheet";
 import { Button } from "@rneui/themed";
-import { useState } from "react";
 
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Fontisto from "@expo/vector-icons/Fontisto";
@@ -26,6 +25,7 @@ function SheetOption() {
     };
 
     const handleDeleteBlog = () => {
+        SheetManager.hide("SheetOption");
         Alert.alert("Xóa bài viết", "Việc xóa bài viết sẽ không thể khôi phục trong tương lai. Bạn có chắc muốn xóa ?", [
             {
                 text: "Hủy",
@@ -36,7 +36,6 @@ function SheetOption() {
                 text: "Xóa",
                 onPress: async () => {
                     await deleteBlog(sheetData.blogId, getPathImage(imageBlog));
-                    SheetManager.hide("SheetOption");
                 },
             },
         ]);

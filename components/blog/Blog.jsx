@@ -5,8 +5,7 @@ import React, { useEffect, useState } from "react";
 import Option from "./Option";
 import FastImage from "react-native-fast-image";
 import CountReact from "./CountReact";
-import { Button } from "@rneui/base";
-import { SheetManager } from "react-native-actions-sheet";
+import { Skeleton } from "@rneui/themed";
 import { useRouter } from "expo-router";
 
 const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
@@ -108,7 +107,7 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
         <Text style={styles.main}>
             <View style={styles.blog}>
                 <View style={styles.avatar}>
-                    {authorData?.photoURL && (
+                    {authorData?.photoURL ? (
                         <Link href={!inMyUserPage ? `/userid/${authorData?.uid}` : ""}>
                             <FastImage
                                 style={{ width: 36, height: 36, borderRadius: 9999 }}
@@ -119,14 +118,20 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
                                 resizeMode={FastImage.resizeMode.cover}
                             />
                         </Link>
+                    ) : (
+                        <Skeleton animation="wave" circle width={36} height={36} />
                     )}
                 </View>
                 <View style={styles.rightContent}>
                     <View style={styles.header}>
                         <View>
-                            <Link href={!inMyUserPage ? `/userid/${authorData?.uid}` : ""}>
-                                <Text style={styles.userName}>{authorData?.displayName}</Text>
-                            </Link>
+                            {authorData?.displayName ? (
+                                <Link href={!inMyUserPage ? `/userid/${authorData?.uid}` : ""}>
+                                    <Text style={styles.userName}>{authorData?.displayName}</Text>
+                                </Link>
+                            ) : (
+                                <Skeleton animation="wave" width={100} height={22} />
+                            )}
                             <Text style={styles.postTime}>{blogData?.createAt && handleConvertDate(blogData?.createAt)}</Text>
                         </View>
                         <Option isMyBlog={isMyBlog} authUser={authUser} blogData={blogData} blogId={blogId} />

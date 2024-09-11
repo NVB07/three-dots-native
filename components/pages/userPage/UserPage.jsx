@@ -1,7 +1,6 @@
 import { View, ScrollView, Pressable, Text, Alert, RefreshControl } from "react-native";
 import { Button } from "@rneui/base";
 import FastImage from "react-native-fast-image";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { useState, useEffect, useContext, useCallback } from "react";
 import firestore from "@react-native-firebase/firestore";
 import Blog from "@/components/blog/Blog";

@@ -1,13 +1,42 @@
-import { View, Text, TextInput } from "react-native";
-import { useContext } from "react";
+import { View, Text, ScrollView } from "react-native";
+import firestore from "@react-native-firebase/firestore";
+import { useContext, useEffect, useState, memo } from "react";
 import { Button } from "@rneui/base";
 import FastImage from "react-native-fast-image";
+import Friend from "./Friend";
 
 import { AuthContext } from "@/components/context/AuthProvider";
 const ChatPage = () => {
-    const { authUser, setAuthUser } = useContext(AuthContext);
+    const { authUser } = useContext(AuthContext);
+    const [friend, setFriend] = useState([]);
+
+    useEffect(() => {
+        if (authUser.uid) {
+            const subscriber = firestore()
+                .collection("roomsChat")
+                .where("user", "array-contains", authUser?.uid)
+                .orderBy("createAt", "desc")
+                .onSnapshot((querySnapshot) => {
+                    if (querySnapshot) {
+                        const docsWithUserUid = [];
+                        console.log("uid", authUser.uid);
+                        querySnapshot.forEach((doc) => {
+                            docsWithUserUid.push({
+                                id: doc.id,
+                                user: doc.data(),
+                            });
+                        });
+                        console.log("query ", docsWithUserUid);
+
+                        setFriend(docsWithUserUid);
+                    }
+                });
+
+            return () => subscriber();
+        }
+    }, []);
     return (
-        <View style={{ paddingHorizontal: 12 }}>
+        <View style={{}}>
             <View
                 style={{
                     width: "100%",
@@ -21,8 +50,8 @@ const ChatPage = () => {
             >
                 <Text style={{ fontSize: 20, fontWeight: "bold" }}>Nhắn tin</Text>
             </View>
-            <View style={{ width: "100%", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                <View style={{ width: "10%", alignItems: "flex-start" }}>
+            <View style={{ width: "100%", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 12 }}>
+                {/* <View style={{ width: "10%", alignItems: "flex-start" }}>
                     <FastImage
                         style={{ width: 37, height: 37, borderRadius: 9999 }}
                         source={{
@@ -31,7 +60,7 @@ const ChatPage = () => {
                         }}
                         resizeMode={FastImage.resizeMode.cover}
                     />
-                </View>
+                </View> */}
                 <View
                     style={{
                         marginTop: 10,
@@ -41,7 +70,7 @@ const ChatPage = () => {
                         marginBottom: 8,
                         flexDirection: "row",
                         alignItems: "center",
-                        width: "90%",
+                        width: "100%",
                         justifyContent: "space-between",
                     }}
                 >
@@ -51,12 +80,27 @@ const ChatPage = () => {
                         titleStyle={{ color: "#999", textAlign: "left" }}
                         type="clear"
                         buttonStyle={{ width: "100%", justifyContent: "flex-start" }}
-                        style={{ height: 35, flex: 1, paddingVertical: 8, paddingHorizontal: 8 }}
-                        title={"Tìm kiếm"}
-                    />
+                        style={{ height: 35, flex: 1, padding: 4 }}
+                    >
+                        <FastImage
+                            style={{ width: 37, height: 37, borderRadius: 9999, marginRight: 6 }}
+                            source={{
+                                uri: authUser?.photoURL,
+                                priority: FastImage.priority.normal,
+                            }}
+                            resizeMode={FastImage.resizeMode.cover}
+                        />
+                        <Text style={{ fontSize: 16, color: "#666" }}>Tìm kiếm</Text>
+                    </Button>
                 </View>
             </View>
-            <Text>chat</Text>
+
+            <ScrollView>
+                {friend.map((item, index) => {
+                    const friendUid = item.user.user.find((uid) => uid !== authUser.uid);
+                    return <Friend uid={friendUid} key={index} />;
+                })}
+            </ScrollView>
         </View>
     );
 };

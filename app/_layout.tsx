@@ -44,6 +44,7 @@ export default function RootLayout() {
                             <Stack.Screen name="+not-found" />
                             <Stack.Screen name="userid" options={{ headerShown: false }} />
                             <Stack.Screen name="blogid" options={{ headerShown: false }} />
+                            <Stack.Screen name="roomChat" options={{ headerShown: false }} />
                         </Stack>
                     </AuthProvider>
                 </SheetProvider>

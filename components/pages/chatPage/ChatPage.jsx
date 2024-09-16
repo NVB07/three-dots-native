@@ -19,15 +19,12 @@ const ChatPage = () => {
                 .onSnapshot((querySnapshot) => {
                     if (querySnapshot) {
                         const docsWithUserUid = [];
-                        console.log("uid", authUser.uid);
                         querySnapshot.forEach((doc) => {
                             docsWithUserUid.push({
                                 id: doc.id,
                                 user: doc.data(),
                             });
                         });
-                        console.log("query ", docsWithUserUid);
-
                         setFriend(docsWithUserUid);
                     }
                 });
@@ -98,7 +95,7 @@ const ChatPage = () => {
             <ScrollView>
                 {friend.map((item, index) => {
                     const friendUid = item.user.user.find((uid) => uid !== authUser.uid);
-                    return <Friend uid={friendUid} key={index} />;
+                    return <Friend uid={friendUid} chatId={item.id} key={index} />;
                 })}
             </ScrollView>
         </View>

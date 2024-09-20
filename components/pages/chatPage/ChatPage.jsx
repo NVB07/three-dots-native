@@ -14,16 +14,19 @@ const ChatPage = () => {
         if (authUser.uid) {
             const subscriber = firestore()
                 .collection("roomsChat")
-                .where("user", "array-contains", authUser?.uid)
+
                 .orderBy("createAt", "desc")
                 .onSnapshot((querySnapshot) => {
                     if (querySnapshot) {
                         const docsWithUserUid = [];
                         querySnapshot.forEach((doc) => {
-                            docsWithUserUid.push({
-                                id: doc.id,
-                                user: doc.data(),
-                            });
+                            const data = doc.data();
+                            if (data.user && data.user.includes(authUser.uid)) {
+                                docsWithUserUid.push({
+                                    id: doc.id,
+                                    user: data.user,
+                                });
+                            }
                         });
                         setFriend(docsWithUserUid);
                     }
@@ -48,16 +51,6 @@ const ChatPage = () => {
                 <Text style={{ fontSize: 20, fontWeight: "bold" }}>Nhắn tin</Text>
             </View>
             <View style={{ width: "100%", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 12 }}>
-                {/* <View style={{ width: "10%", alignItems: "flex-start" }}>
-                    <FastImage
-                        style={{ width: 37, height: 37, borderRadius: 9999 }}
-                        source={{
-                            uri: authUser?.photoURL,
-                            priority: FastImage.priority.normal,
-                        }}
-                        resizeMode={FastImage.resizeMode.cover}
-                    />
-                </View> */}
                 <View
                     style={{
                         marginTop: 10,
@@ -94,7 +87,7 @@ const ChatPage = () => {
 
             <ScrollView>
                 {friend.map((item, index) => {
-                    const friendUid = item.user.user.find((uid) => uid !== authUser.uid);
+                    const friendUid = item.user.find((uid) => uid !== authUser.uid);
                     return <Friend uid={friendUid} chatId={item.id} key={index} />;
                 })}
             </ScrollView>

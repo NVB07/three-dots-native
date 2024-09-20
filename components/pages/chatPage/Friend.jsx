@@ -6,7 +6,6 @@ import firestore from "@react-native-firebase/firestore";
 import { useRouter } from "expo-router";
 
 const Friend = ({ uid, chatId }) => {
-    console.log(chatId);
     const router = useRouter();
     const [friendData, setFriendData] = useState(null);
     useEffect(() => {

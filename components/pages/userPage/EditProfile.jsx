@@ -56,7 +56,6 @@ const EditProfile = ({ authUser, setAuthUser }) => {
     };
     useEffect(() => {
         handleDataFormat();
-        console.log("change");
     }, [image, userName, gmail, facebook, instagram, threads, tiktok, x]);
 
     const getPathImage = (imageUrl) => {

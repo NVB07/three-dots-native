@@ -1,16 +1,15 @@
 import firestore from "@react-native-firebase/firestore";
-import { View, ImageBackground, Text, Pressable, TextInput, Keyboard, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text } from "react-native";
 import { Link } from "expo-router";
 import { Button } from "@rneui/themed";
-import ActionSheet, { ScrollView, useSheetPayload, SheetManager } from "react-native-actions-sheet";
 import FastImage from "react-native-fast-image";
-import { Dialog, CheckBox, ListItem, Avatar } from "@rneui/themed";
+import { Dialog } from "@rneui/themed";
 import { useEffect, useState } from "react";
 import { deleteComment } from "../firebase/service";
 
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 
-const CommentItem = ({ comment, authUser, blogId }) => {
+const CommentItem = ({ comment, authUser, blogId, author }) => {
     const [visible2, setVisible2] = useState(false);
     const [userComment, setuserComment] = useState(null);
 
@@ -78,7 +77,7 @@ const CommentItem = ({ comment, authUser, blogId }) => {
                             </Link>
                             <Text style={{ fontSize: 13, color: "#999" }}>{handleConvertDate(comment?.sendTime)}</Text>
                         </View>
-                        {authUser.uid === comment.uid && (
+                        {(authUser.uid === comment.uid || authUser.uid === author.uid) && (
                             <View>
                                 <Button type="clear" radius={9999} onPress={toggleDialog2} buttonStyle={{ width: 34, height: 34 }}>
                                     <SimpleLineIcons name="options" size={14} color="black" />

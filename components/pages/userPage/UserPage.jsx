@@ -18,6 +18,7 @@ const UserPage = ({ uid, userTabClick = false }) => {
     const myUserPage = uid === authUser.uid;
     const [userData, setUserData] = useState();
     const [userBlog, setUserBlog] = useState([]);
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
     const [refreshing, setRefreshing] = useState(false);
 
@@ -84,7 +85,6 @@ const UserPage = ({ uid, userTabClick = false }) => {
         const subscriberUser = firestore()
             .collection("users")
             .doc(uid)
-
             .onSnapshot((documentSnapshot) => {
                 if (documentSnapshot.exists) {
                     const data = documentSnapshot.data();
@@ -110,6 +110,53 @@ const UserPage = ({ uid, userTabClick = false }) => {
         };
     }, [uid]);
 
+    const handleChat = async () => {
+        setLoading(true);
+        try {
+            const docsWithUserUid = [];
+            const querySnapshot = await firestore().collection("roomsChat").get();
+
+            if (!querySnapshot.empty) {
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.user && data.user.includes(authUser.uid)) {
+                        docsWithUserUid.push({
+                            id: doc.id,
+                            user: data.user,
+                        });
+                    }
+                });
+            }
+            const resultId = docsWithUserUid.find((item) => item.user?.includes(authUser.uid) && item.user?.includes(userData.uid));
+
+            if (resultId) {
+                setLoading(false);
+                router.push({
+                    pathname: "/roomChat/" + resultId.id,
+                    params: {
+                        friendData: userData ? encodeURIComponent(JSON.stringify(userData)) : null,
+                    },
+                });
+            } else {
+                const docRef = await firestore()
+                    .collection("roomsChat")
+                    .add({
+                        user: [authUser.uid, userData.uid],
+                        createAt: firestore.FieldValue.serverTimestamp(),
+                    });
+                setLoading(false);
+                router.push({
+                    pathname: "/roomChat/" + docRef.id,
+                    params: {
+                        friendData: userData ? encodeURIComponent(JSON.stringify(userData)) : null,
+                    },
+                });
+            }
+        } catch (error) {
+            console.error("Error handling chat: ", error);
+        }
+    };
+
     return (
         <View style={{ paddingBottom: 30 }}>
             <HeaderBack title={userData?.displayName} />
@@ -134,17 +181,12 @@ const UserPage = ({ uid, userTabClick = false }) => {
                 </View>
                 <View style={{ width: "100%", borderBottomWidth: 1, borderColor: "#ccc", paddingBottom: 20, marginBottom: 20 }}>
                     {!myUserPage ? (
-                        <Button radius={"md"}>Nhắn tin</Button>
+                        <Button disabled={loading} loading={loading} onPress={handleChat} radius={"md"}>
+                            Nhắn tin
+                        </Button>
                     ) : (
                         <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
-                            <Button
-                                type="outline"
-                                onPress={() => router.push(`/userid/edit`)}
-                                // titleStyle={{ color: "#000" }}
-                                // buttonStyle={{ backgroundColor: "#C0C0C0FF" }}
-                                containerStyle={{ width: "80%" }}
-                                radius={"md"}
-                            >
+                            <Button type="outline" onPress={() => router.push(`/userid/edit`)} containerStyle={{ width: "80%" }} radius={"md"}>
                                 Sửa thông tin
                             </Button>
                             <Button onPress={alertSignOut} type="outline" buttonStyle={{ height: 40 }} containerStyle={{ width: "17%", height: 40 }} radius={"md"}>

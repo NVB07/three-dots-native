@@ -100,7 +100,7 @@ const BlogPage = ({ blogid, blogData, author, comment, imageSize, authUser }) =>
                         <CountReact showSheet authUser={authUser} blogId={blogid} />
                     </View>
                     {commentSnapshot.map((item, index) => {
-                        return <CommentItem key={index} comment={item} authUser={authUser} blogId={blogid} />;
+                        return <CommentItem key={index} comment={item} authUser={authUser} author={author} blogId={blogid} />;
                     })}
                 </ScrollView>
             </View>

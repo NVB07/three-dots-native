@@ -88,7 +88,7 @@ const ChatPage = () => {
             <ScrollView>
                 {friend.map((item, index) => {
                     const friendUid = item.user.find((uid) => uid !== authUser.uid);
-                    return <Friend uid={friendUid} chatId={item.id} key={index} />;
+                    return <Friend uid={friendUid} chatId={item.id} key={index} authUser={authUser} />;
                 })}
             </ScrollView>
         </View>

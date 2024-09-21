@@ -5,15 +5,27 @@ import FastImage from "react-native-fast-image";
 import firestore from "@react-native-firebase/firestore";
 import { useRouter } from "expo-router";
 
-const Friend = ({ uid, chatId }) => {
+const Friend = ({ uid, chatId, authUser }) => {
     const router = useRouter();
     const [friendData, setFriendData] = useState(null);
+    const [lastMessage, setLastMessage] = useState(null);
     useEffect(() => {
         const subscriber = firestore()
             .collection("users")
             .doc(uid)
             .onSnapshot((documentSnapshot) => {
                 setFriendData(documentSnapshot.data());
+            });
+
+        return () => subscriber();
+    }, [uid]);
+
+    useEffect(() => {
+        const subscriber = firestore()
+            .collection("roomsChat")
+            .doc(chatId)
+            .onSnapshot((documentSnapshot) => {
+                setLastMessage(documentSnapshot.data());
             });
 
         return () => subscriber();
@@ -43,8 +55,13 @@ const Friend = ({ uid, chatId }) => {
                         resizeMode={FastImage.resizeMode.cover}
                     />
                     <View style={{ justifyContent: "space-between" }}>
-                        <Text style={{ fontSize: 16, fontWeight: "500" }}>{friendData?.displayName}</Text>
-                        <Text style={{ fontSize: 15, fontWeight: "normal", color: "#0069FFFF", fontStyle: "italic" }}>Có tin nhắn mới</Text>
+                        <Text style={{ fontSize: 16, fontWeight: lastMessage?.lastMessage?.uid !== authUser.uid ? 600 : "normal" }}>{friendData?.displayName}</Text>
+
+                        {lastMessage?.lastMessage?.uid !== authUser.uid ? (
+                            <Text style={{ fontSize: 15, fontWeight: "normal", color: "#0069FFFF" }}>{lastMessage?.lastMessage?.content}</Text>
+                        ) : (
+                            <Text style={{ fontSize: 15, fontWeight: "normal", color: "#666" }}>{"Bạn: " + lastMessage?.lastMessage?.content}</Text>
+                        )}
                     </View>
                 </Button>
             </View>

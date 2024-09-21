@@ -3,7 +3,7 @@ import FastImage from "react-native-fast-image";
 
 const Message = ({ messageData, friendData, authUser }) => {
     return (
-        <View style={{ paddingHorizontal: 12, marginBottom: 8 }}>
+        <View style={{ paddingHorizontal: 12, marginVertical: 4 }}>
             {authUser?.uid !== messageData.uid ? (
                 <View style={{ flexDirection: "row", alignItems: "center", maxWidth: "65%", height: "auto" }}>
                     <View style={{ justifyContent: "flex-end", marginRight: 5, alignSelf: "stretch" }}>

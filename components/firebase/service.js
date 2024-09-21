@@ -84,6 +84,17 @@ export async function addComment(blogId, comment, authUser) {
         return false;
     }
 }
+export async function sendMessageValue(id, value) {
+    try {
+        await firestore().collection("roomsChat").doc(id).collection("chat").add(value);
+        await firestore().collection("roomsChat").doc(id).update({ createAt: firestore.FieldValue.serverTimestamp(), lastMessage: value });
+        console.log("sended message!");
+        return true;
+    } catch (error) {
+        console.error("Error send message: ", error);
+        return false;
+    }
+}
 export async function deleteComment(blogId, commentId) {
     try {
         await firestore().collection("blogs").doc(blogId).collection("comments").doc(commentId).delete();

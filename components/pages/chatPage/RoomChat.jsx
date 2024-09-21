@@ -87,7 +87,7 @@ const RoomChat = ({ firendData, roomId }) => {
                     </View>
                 )}
             </ScrollView>
-            <ChatInput documentId={roomId} currentUserData={authUser} messageData={messageArray} scrollRef={scrollableRef} />
+            <ChatInput setMessageArray={setMessageArray} documentId={roomId} currentUserData={authUser} messageData={messageArray} scrollRef={scrollableRef} />
         </View>
     );
 };

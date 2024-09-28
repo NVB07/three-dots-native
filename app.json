@@ -13,7 +13,8 @@
             "backgroundColor": "#ffffff"
         },
         "ios": {
-            "supportsTablet": true
+            "supportsTablet": true,
+            "bundleIdentifier": "com.nvb.threedots"
         },
         "android": {
             "googleServicesFile": "./google-services.json",
@@ -21,7 +22,8 @@
             "adaptiveIcon": {
                 "foregroundImage": "./assets/images/adaptive-icon.png",
                 "backgroundColor": "#ffffff"
-            }
+            },
+            "permissions": ["android.permission.RECORD_AUDIO"]
         },
         "web": {
             "bundler": "metro",
@@ -39,10 +41,22 @@
                 {
                     "photosPermission": "The app accesses your photos to let you share them with your friends."
                 }
+            ],
+            [
+                "onesignal-expo-plugin",
+                {
+                    "mode": "development"
+                }
             ]
         ],
         "experiments": {
             "typedRoutes": true
+        },
+        "extra": {
+            "oneSignalAppId": "6247d01a-bfba-45c6-b768-0c3efa3eaea9",
+            "router": {
+                "origin": false
+            }
         }
     }
 }

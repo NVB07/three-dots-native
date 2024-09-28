@@ -6,5 +6,5 @@
             "@/*": ["./*"]
         }
     },
-    "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "app/roomChat/[roomId]/index.jsx"]
+    "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "app/roomChat/[roomId]/index.jsx", "app/_layout.jsx"]
 }

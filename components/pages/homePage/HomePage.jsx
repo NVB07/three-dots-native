@@ -7,7 +7,6 @@ import FastImage from "react-native-fast-image";
 import Blog from "@/components/blog/Blog";
 import { SheetManager } from "react-native-actions-sheet";
 import { AuthContext } from "@/components/context/AuthProvider";
-
 function HomePage() {
     const { authUser } = useContext(AuthContext);
     const [blogs, setBlogs] = useState([]);

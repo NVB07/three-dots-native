@@ -11,11 +11,12 @@ import "../components/sheets";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { PermissionsAndroid } from "react-native";
+import { LogLevel, OneSignal } from "react-native-onesignal";
+import Constants from "expo-constants";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-    const colorScheme = useColorScheme();
     PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
     const [loaded] = useFonts({
         SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -30,6 +31,12 @@ export default function RootLayout() {
     if (!loaded) {
         return null;
     }
+    OneSignal.Debug.setLogLevel(6);
+    OneSignal.initialize("6247d01a-bfba-45c6-b768-0c3efa3eaea9");
+    OneSignal.Notifications.requestPermission(true);
+    console.log("innit");
+
+    // Also need enable notifications to complete OneSignal setup
 
     return (
         // <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

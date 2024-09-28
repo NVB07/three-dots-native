@@ -4,37 +4,14 @@ import { useContext, useEffect, useState, memo } from "react";
 import { Button } from "@rneui/base";
 import FastImage from "react-native-fast-image";
 import Friend from "./Friend";
+import { CountMessageContext } from "@/components/context/CountMessageProvider";
 
 import { AuthContext } from "@/components/context/AuthProvider";
 const ChatPage = () => {
+    const { messages } = useContext(CountMessageContext);
+
     const { authUser } = useContext(AuthContext);
-    const [friend, setFriend] = useState([]);
 
-    useEffect(() => {
-        if (authUser.uid) {
-            const subscriber = firestore()
-                .collection("roomsChat")
-
-                .orderBy("createAt", "desc")
-                .onSnapshot((querySnapshot) => {
-                    if (querySnapshot) {
-                        const docsWithUserUid = [];
-                        querySnapshot.forEach((doc) => {
-                            const data = doc.data();
-                            if (data.user && data.user.includes(authUser.uid)) {
-                                docsWithUserUid.push({
-                                    id: doc.id,
-                                    user: data.user,
-                                });
-                            }
-                        });
-                        setFriend(docsWithUserUid);
-                    }
-                });
-
-            return () => subscriber();
-        }
-    }, []);
     return (
         <View style={{}}>
             <View
@@ -86,9 +63,9 @@ const ChatPage = () => {
             </View>
 
             <ScrollView>
-                {friend.map((item, index) => {
-                    const friendUid = item.user.find((uid) => uid !== authUser.uid);
-                    return <Friend uid={friendUid} chatId={item.id} key={index} authUser={authUser} />;
+                {messages?.map((item, index) => {
+                    const friendUid = item.data.user.find((uid) => uid !== authUser.uid);
+                    return <Friend uid={friendUid} chatId={item.id} key={index} authUser={authUser} lastMessage={item.data.lastMessage} />;
                 })}
             </ScrollView>
         </View>

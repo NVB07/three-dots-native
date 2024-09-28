@@ -4,8 +4,9 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect, useState, useRef } from "react";
 import { sendMessageValue } from "@/components/firebase/service";
 import firestore from "@react-native-firebase/firestore";
+import { sendPushNotification } from "@/components/oneSignal/notification";
 
-const ChatInput = ({ documentId, currentUserData, setMessageArray, scrollRef }) => {
+const ChatInput = ({ documentId, currentUserData, setMessageArray, scrollRef, friendData }) => {
     const [messageValue, setMessageValue] = useState("");
     const inputRef = useRef(null);
 
@@ -28,6 +29,7 @@ const ChatInput = ({ documentId, currentUserData, setMessageArray, scrollRef }) 
         setMessageValue("");
         scrollToBottom(true, 100);
         await sendMessageValue(documentId, value);
+        await sendPushNotification(friendData?.uid, "Tin nhắn mới !", `${currentUserData?.displayName}: "${messageValue}"`, currentUserData.photoURL);
     };
 
     return (

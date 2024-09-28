@@ -123,7 +123,6 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
     avatar: {
-        backgroundColor: "yellow",
         width: 36,
         height: 36,
         borderRadius: 9999,

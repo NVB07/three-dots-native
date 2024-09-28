@@ -2,6 +2,7 @@
 import React, { useContext } from "react";
 import { View, TouchableOpacity } from "react-native";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
+import { ChatIcon } from "@/components/navigation/ChatIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { SheetManager } from "react-native-actions-sheet";
@@ -93,15 +94,14 @@ import { AuthContext } from "@/components/context/AuthProvider";
 // }
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from ".";
 import ChatScreen from "./chat";
 import UserScreen from "./user";
 import AddBlog from "./add";
 import NotificationScreen from "./notification";
+import SearchScreen from "./notification";
 
 const Tab = createBottomTabNavigator();
-const TabChild = createNativeStackNavigator();
 
 export default function TabLayout() {
     const { authUser } = useContext(AuthContext);
@@ -122,11 +122,11 @@ export default function TabLayout() {
                 }}
             />
             <Tab.Screen
-                name="Notification"
-                component={NotificationScreen}
+                name="search"
+                component={SearchScreen}
                 options={{
                     title: "",
-                    tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "notifications" : "notifications-outline"} color={color} />,
+                    tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "search" : "search-outline"} color={color} />,
                 }}
             />
             <Tab.Screen
@@ -150,14 +150,16 @@ export default function TabLayout() {
                     ),
                 }}
             />
+
             <Tab.Screen
                 name="Chat"
                 component={ChatScreen}
                 options={{
                     title: "",
-                    tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "chatbox" : "chatbox-outline"} color={color} />,
+                    tabBarIcon: ({ color, focused }) => <ChatIcon name={focused ? "chatbox" : "chatbox-outline"} authUser={authUser} color={color} style={undefined} />,
                 }}
             />
+
             <Tab.Screen
                 name="user"
                 component={UserScreen}

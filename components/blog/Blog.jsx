@@ -16,6 +16,7 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
     const [authorData, setAuthorData] = useState(); // dữ liệu cá nhân tác giả
     const [isMyBlog, setIsMyBlog] = useState(false);
     const [comments, setComments] = useState();
+    const [loading, setLoading] = useState(true);
 
     const handleConvertDate = (timestamp) => {
         if (timestamp) {
@@ -97,6 +98,7 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
                 .onSnapshot((documentSnapshot) => {
                     if (documentSnapshot.exists) {
                         setAuthorData(documentSnapshot.data());
+                        setLoading(false);
                     }
                 });
             return () => subscriber();
@@ -151,21 +153,29 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
                             })
                         }
                     >
-                        {blogData?.post.content && <Text style={styles.content}>{blogData?.post.normalText}</Text>}
+                        {blogData?.post.content &&
+                            (!loading ? (
+                                <Text style={styles.content}>{blogData?.post.normalText}</Text>
+                            ) : (
+                                <Skeleton animation="wave" width={150} height={18} style={{ marginBottom: 4 }} />
+                            ))}
 
-                        {blogData?.post.imageURL && (
-                            <View style={styles.imageContainer}>
-                                <FastImage
-                                    style={{ width: "100%", height: "100%", padding: 0, maxHeight: 320, borderRadius: 8 }}
-                                    overflow="hidden"
-                                    source={{
-                                        uri: blogData?.post.imageURL,
-                                        priority: FastImage.priority.normal,
-                                    }}
-                                    resizeMode={FastImage.resizeMode.cover}
-                                />
-                            </View>
-                        )}
+                        {blogData?.post.imageURL &&
+                            (!loading ? (
+                                <View style={styles.imageContainer}>
+                                    <FastImage
+                                        style={{ width: "100%", height: "100%", padding: 0, maxHeight: 320, borderRadius: 8 }}
+                                        overflow="hidden"
+                                        source={{
+                                            uri: blogData?.post.imageURL,
+                                            priority: FastImage.priority.normal,
+                                        }}
+                                        resizeMode={FastImage.resizeMode.cover}
+                                    />
+                                </View>
+                            ) : (
+                                <Skeleton animation="wave" style={{ width: "100%", height: 320 }} />
+                            ))}
                     </Pressable>
                     <View style={{ marginTop: 20 }}>
                         <CountReact authUser={authUser} blogId={blogId} blogData={blogData} authorData={authorData} imageSize={imageSize} comments={comments} />

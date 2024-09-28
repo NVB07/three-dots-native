@@ -8,6 +8,7 @@ import CountReact from "../../blog/CountReact";
 import CommentItem from "../../blog/CommentItem";
 import { Button } from "@rneui/base";
 import { Ionicons } from "@expo/vector-icons";
+import { sendPushNotification } from "../../oneSignal/notification";
 
 const BlogPage = ({ blogid, blogData, author, comment, imageSize, authUser }) => {
     const [commentValue, setCommentValue] = useState("");
@@ -15,6 +16,7 @@ const BlogPage = ({ blogid, blogData, author, comment, imageSize, authUser }) =>
 
     const handleAddComment = async () => {
         await addComment(blogid, commentValue, authUser);
+        await sendPushNotification(author.uid, `Bình luận mới :`, `${authUser.displayName}: "${commentValue}"`);
         setCommentValue("");
     };
 

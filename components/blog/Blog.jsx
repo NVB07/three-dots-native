@@ -190,8 +190,8 @@ export default Blog;
 const styles = StyleSheet.create({
     main: {
         padding: 12,
-        borderWidth: 1,
         borderRadius: 12,
+        borderWidth: 1,
         borderColor: "#ccc",
         flexDirection: "row",
         overflow: "hidden",

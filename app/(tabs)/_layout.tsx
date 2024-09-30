@@ -98,8 +98,7 @@ import HomeScreen from ".";
 import ChatScreen from "./chat";
 import UserScreen from "./user";
 import AddBlog from "./add";
-import NotificationScreen from "./notification";
-import SearchScreen from "./notification";
+import SearchScreen from "./search";
 
 const Tab = createBottomTabNavigator();
 

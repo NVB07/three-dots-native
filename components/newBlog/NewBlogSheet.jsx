@@ -63,7 +63,13 @@ function NewBlogSheet() {
         const searchKeywords = text
             .trim()
             .toUpperCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/Đ/g, "D")
             .split(/[ \n]+/);
+
+        console.log(searchKeywords);
+
         const addData = await addBlog({
             author: {
                 uid: payload?.uid,

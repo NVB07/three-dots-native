@@ -56,7 +56,7 @@ function HomePage() {
                         radius={"sm"}
                         style={({ pressed }) => [
                             {
-                                backgroundColor: pressed ? "#C2C2C2FF" : "#D8D8D8FF",
+                                backgroundColor: pressed ? "#C2C2C2FF" : "#E2E2E2FF",
                             },
                             styles.buttonNewBlog,
                         ]}
@@ -110,6 +110,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         width: "100%",
         paddingVertical: 10,
+        borderWidth: 1,
+        borderColor: "#999",
     },
     scroll: {
         flex: 1,

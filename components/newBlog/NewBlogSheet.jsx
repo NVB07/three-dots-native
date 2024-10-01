@@ -68,8 +68,6 @@ function NewBlogSheet() {
             .replace(/Đ/g, "D")
             .split(/[ \n]+/);
 
-        console.log(searchKeywords);
-
         const addData = await addBlog({
             author: {
                 uid: payload?.uid,

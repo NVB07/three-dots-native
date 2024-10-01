@@ -4,13 +4,18 @@ import { useContext, useEffect, useState, memo } from "react";
 import { Button } from "@rneui/base";
 import FastImage from "react-native-fast-image";
 import Friend from "./Friend";
+import { SheetManager } from "react-native-actions-sheet";
 import { CountMessageContext } from "@/components/context/CountMessageProvider";
 
 import { AuthContext } from "@/components/context/AuthProvider";
 const ChatPage = () => {
     const { messages } = useContext(CountMessageContext);
-
     const { authUser } = useContext(AuthContext);
+    const [friendID, setFriendId] = useState([]);
+
+    const handleChildData = (childData) => {
+        setFriendId((prevData) => [...prevData, childData]);
+    };
 
     return (
         <View style={{}}>
@@ -42,6 +47,7 @@ const ChatPage = () => {
                     }}
                 >
                     <Button
+                        onPress={() => SheetManager.show("SearchFriendSheet", { payload: { friendID, authUser } })}
                         containerStyle={{ width: "100%" }}
                         radius={9999}
                         titleStyle={{ color: "#999", textAlign: "left" }}
@@ -65,7 +71,10 @@ const ChatPage = () => {
             <ScrollView>
                 {messages?.map((item, index) => {
                     const friendUid = item.data.user.find((uid) => uid !== authUser.uid);
-                    return <Friend uid={friendUid} chatId={item.id} key={index} authUser={authUser} lastMessage={item.data.lastMessage} />;
+
+                    return (
+                        <Friend onDataReceived={handleChildData} uid={friendUid} chatId={item.id} key={index} authUser={authUser} lastMessage={item.data.lastMessage} />
+                    );
                 })}
             </ScrollView>
         </View>

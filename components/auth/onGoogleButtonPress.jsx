@@ -34,6 +34,13 @@ export default async function onGoogleButtonPress() {
 }
 
 async function addUserToFirestore(user) {
+    const searchKeywords = user.displayName
+        .trim()
+        .toUpperCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/Đ/g, "D")
+        .split(/[ \n]+/);
     const userData = {
         displayName: user.displayName || "",
         email: user.email || "",
@@ -45,6 +52,7 @@ async function addUserToFirestore(user) {
         photoURL: user.photoURL || "",
         uid: user.uid,
         providerId: user.providerData[0]?.providerId,
+        searchKeyWord: searchKeywords,
     };
 
     // Thêm document vào collection 'users' với user.uid làm ID

@@ -13,15 +13,21 @@ const SearchPage = () => {
     const { authUser } = useContext(AuthContext);
     const [searchValue, setSearchValue] = useState("");
     const [searchResults, setSearchResults] = useState([]);
+    const [searchUserResults, setSearchUserResults] = useState([]);
+    const [searchState, setSearchState] = useState("innit");
     const debouncedSearchTerm = useDebounce(searchValue, 500);
 
     const handleClearSearchInput = () => {
         setSearchValue("");
         setSearchResults([]);
+        setSearchState("innit");
     };
     const handleChangeInputText = (e) => {
         setSearchValue(e);
-        if (e.trim() === "") setSearchResults([]);
+        if (e.trim() === "") {
+            setSearchResults([]);
+            setSearchState("innit");
+        }
     };
 
     const removeVietnameseTones = (str) => {
@@ -34,27 +40,54 @@ const SearchPage = () => {
 
     useEffect(() => {
         if (debouncedSearchTerm) {
+            setSearchState("start");
             const searchKeywords = debouncedSearchTerm.split(" ");
             const keywordsArray = [
                 ...searchKeywords.map((keyword) => keyword.toUpperCase()), // Từ khóa có dấu
                 ...searchKeywords.map((keyword) => removeVietnameseTones(keyword).toUpperCase()), // Từ khóa không dấu
             ];
 
-            firestore()
-                .collection("blogs")
-                // Filter results
-                .where("post.searchKeywords", "array-contains-any", keywordsArray)
-                .get()
-                .then((querySnapshot) => {
-                    const results = [];
-                    querySnapshot.forEach((doc) => {
-                        const data = { id: doc.id, ...doc.data() };
-                        results.push(data);
-                    });
-                    setSearchResults(results);
+            setSearchResults([]);
+            setSearchUserResults([]);
+
+            const blogPromise = firestore().collection("blogs").where("post.searchKeywords", "array-contains-any", keywordsArray).get();
+
+            const userPromise = firestore().collection("users").where("searchKeyWord", "array-contains-any", keywordsArray).get();
+
+            Promise.all([blogPromise, userPromise])
+                .then(([blogQuerySnapshot, userQuerySnapshot]) => {
+                    let resultsBlog = [];
+                    let resultsUser = [];
+
+                    if (!blogQuerySnapshot.empty) {
+                        blogQuerySnapshot.forEach((doc) => {
+                            const data = { id: doc.id, ...doc.data() };
+                            resultsBlog.push(data);
+                        });
+                        setSearchResults(resultsBlog);
+                    }
+
+                    if (!userQuerySnapshot.empty) {
+                        userQuerySnapshot.forEach((doc) => {
+                            const data = { id: doc.id, ...doc.data() };
+                            resultsUser.push(data);
+                        });
+                        setSearchUserResults(resultsUser);
+                    }
+
+                    if (resultsBlog.length === 0 && resultsUser.length === 0) {
+                        setSearchState("empty");
+                    } else {
+                        setSearchState("no-empty");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching search results:", error);
+                    setSearchState("error");
                 });
         }
     }, [debouncedSearchTerm]);
+
     return (
         <View style={{ flex: 1 }}>
             <View
@@ -73,32 +106,64 @@ const SearchPage = () => {
             <View style={{ paddingHorizontal: 8, marginTop: 8, paddingBottom: 8 }}>
                 <View style={{ borderWidth: 1, borderColor: "#ccc", padding: 6, flexDirection: "row", borderRadius: 9999, alignItems: "center" }}>
                     <TextInput
-                        autoFocus
+                        // autoFocus
                         onChangeText={handleChangeInputText}
                         value={searchValue}
                         style={{ flex: 1, fontSize: 16, paddingLeft: 4 }}
                         placeholder="Tìm kiếm..."
                     />
-                    {searchValue && (
+                    {searchValue && searchState !== "start" ? (
                         <Button onPress={handleClearSearchInput} type="clear" buttonStyle={{ padding: 0, paddingHorizontal: 4, paddingVertical: 2 }} radius={9999}>
                             <AntDesign name="close" size={18} color="black" />
                         </Button>
+                    ) : (
+                        searchValue &&
+                        searchState === "start" && (
+                            <Button type="clear" loading buttonStyle={{ padding: 0, paddingHorizontal: 4, paddingVertical: 2 }} radius={9999}></Button>
+                        )
                     )}
                 </View>
             </View>
-            {searchResults.length !== 0 ? (
+
+            {searchState === "empty" && (
+                <View style={{ width: "100%", justifyContent: "center" }}>
+                    <Text style={{ textAlign: "center" }}>Hãy tìm với từ khóa khác !</Text>
+                </View>
+            )}
+
+            {searchState === "no-empty" && (
                 <ScrollView style={{ paddingHorizontal: 8 }}>
-                    {searchResults.map((result, index) => {
-                        return <SearchItem data={result} key={index} authUser={authUser} />;
-                    })}
+                    {searchResults.length > 0 && (
+                        <View>
+                            {searchResults.map((result, index) => {
+                                return <SearchItem data={result} key={index} authUser={authUser} />;
+                            })}
+                        </View>
+                    )}
+
+                    {searchUserResults.length > 0 && (
+                        <View>
+                            {searchUserResults.map((result, index) => {
+                                return <SearchItem key={index} authUser={authUser} userResults={result} />;
+                            })}
+                        </View>
+                    )}
                 </ScrollView>
-            ) : (
+            )}
+
+            {searchState !== "no-empty" && (
                 <View style={{ flex: 1, alignItems: "center", marginTop: 20 }}>
                     <FastImage
-                        style={{ width: 300, height: 300, borderRadius: 9999, marginRight: 6 }}
+                        style={{
+                            width: 300,
+                            height: 300,
+                            borderRadius: 9999,
+                            marginRight: 6,
+                            // elevation: 10,
+                        }}
                         source={{
-                            uri: "https://firebasestorage.googleapis.com/v0/b/social-chat-d2b4e.appspot.com/o/appLogo%2Fpending.GIF?alt=media&token=f643806b-d308-4c32-b502-59754de499ad",
-                            priority: FastImage.priority.high,
+                            uri: "https://i.pinimg.com/originals/f5/27/0a/f5270acbc4b98112fcd520d2eea023de.gif",
+                            priority: FastImage.priority.normal,
                         }}
                         resizeMode={FastImage.resizeMode.cover}
                     />

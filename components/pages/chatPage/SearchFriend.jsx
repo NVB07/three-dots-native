@@ -1,31 +1,18 @@
 import { View, Text } from "react-native";
 import { Button } from "@rneui/base";
-import { useState, useEffect, useContext } from "react";
 import FastImage from "react-native-fast-image";
-import firestore from "@react-native-firebase/firestore";
 import { useRouter } from "expo-router";
+import { SheetManager } from "react-native-actions-sheet";
 
-const Friend = ({ uid, chatId, authUser, lastMessage, onDataReceived }) => {
+const SearchFriend = ({ friendData, chatId, authUser, lastMessage }) => {
     const router = useRouter();
-    const [friendData, setFriendData] = useState(null);
-    useEffect(() => {
-        const subscriber = firestore()
-            .collection("users")
-            .doc(uid)
-            .onSnapshot((documentSnapshot) => {
-                const userData = documentSnapshot.data();
-                setFriendData(userData);
-                onDataReceived({ userData, chatId, lastMessage });
-            });
-
-        return () => subscriber();
-    }, [uid]);
 
     return (
-        <View style={{ width: "100%", marginVertical: 4 }}>
+        <View style={{ width: "100%" }}>
             <View style={{}}>
                 <Button
                     onPress={() => {
+                        SheetManager.hide("SearchFriendSheet");
                         router.push({
                             pathname: "/roomChat/" + chatId,
                             params: {
@@ -67,4 +54,4 @@ const Friend = ({ uid, chatId, authUser, lastMessage, onDataReceived }) => {
     );
 };
 
-export default Friend;
+export default SearchFriend;

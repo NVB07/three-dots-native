@@ -1,5 +1,6 @@
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import firestore from "@react-native-firebase/firestore";
 
 GoogleSignin.configure({
     webClientId: "315301649530-bkbqj75ri9sura9qpvkl725uebf51ktr.apps.googleusercontent.com", // client ID of type WEB for your server. Required to get the `idToken` on the user object, and for offline access.
@@ -24,6 +25,7 @@ export default async function onGoogleButtonPress() {
     const result = await auth().signInWithCredential(googleCredential);
     // Sign-in the user with the credential
     const { additionalUserInfo } = result;
+
     if (additionalUserInfo?.isNewUser) {
         // Người dùng mới, thực hiện hành động thêm document vào collection 'users'
         const user = result.user;

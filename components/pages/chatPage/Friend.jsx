@@ -50,13 +50,13 @@ const Friend = ({ uid, chatId, authUser, lastMessage, onDataReceived }) => {
 
                         {lastMessage?.uid !== authUser.uid ? (
                             <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 15, fontWeight: "normal", color: "#0069FFFF" }}>
-                                {lastMessage?.content}
+                                {lastMessage?.content || <Text style={{ color: "#666", fontStyle: "italic" }}> Chưa có tin nhắn</Text>}
                             </Text>
                         ) : (
                             <View style={{ flexDirection: "row", width: "100%" }}>
                                 <Text style={{ fontSize: 15, fontWeight: "normal", color: "#666" }}>{"Bạn: "}</Text>
                                 <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 15, fontWeight: "normal", color: "#666", flex: 1 }}>
-                                    {lastMessage?.content}
+                                    {lastMessage?.content || <Text style={{ color: "#666", fontStyle: "italic" }}> Chưa có tin nhắn</Text>}
                                 </Text>
                             </View>
                         )}

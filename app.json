@@ -1,84 +1,80 @@
 {
-  "expo": {
-    "name": "three-dots-native",
-    "slug": "three-dots-native",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splashImage.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.nvb.threedots"
-    },
-    "android": {
-      "googleServicesFile": "./google-services.json",
-      "package": "com.nvb.threedots",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ]
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "plugins": [
-      "expo-router",
-      "@react-native-firebase/app",
-      "@react-native-firebase/auth",
-      "@react-native-firebase/crashlytics",
-      "@react-native-google-signin/google-signin",
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
-        }
-      ],
-      [
-        "onesignal-expo-plugin",
-        {
-          "mode": "development"
-        }
-      ]
-    ],
-    "experiments": {
-      "typedRoutes": true
-    },
-    "extra": {
-      "oneSignalAppId": "6247d01a-bfba-45c6-b768-0c3efa3eaea9",
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "build": {
-          "experimental": {
-            "ios": {
-              "appExtensions": [
-                {
-                  "targetName": "OneSignalNotificationServiceExtension",
-                  "bundleIdentifier": "com.nvb.threedots.OneSignalNotificationServiceExtension",
-                  "entitlements": {
-                    "com.apple.security.application-groups": [
-                      "group.com.nvb.threedots.onesignal"
-                    ]
-                  }
-                }
-              ]
-            }
-          }
+    "expo": {
+        "name": "three-dots-native",
+        "slug": "three-dots-native",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/images/icon.png",
+        "scheme": "myapp",
+        "userInterfaceStyle": "automatic",
+        "splash": {
+            "image": "./assets/images/splashImage.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
         },
-        "projectId": "97acec38-f7a7-460b-823b-51ed60f440c1"
-      }
+        "ios": {
+            "supportsTablet": true,
+            "bundleIdentifier": "com.nvb.threedots"
+        },
+        "android": {
+            "googleServicesFile": "./google-services.json",
+            "package": "com.nvb.threedots",
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/images/adaptive-icon.png",
+                "backgroundColor": "#ffffff"
+            },
+            "permissions": ["android.permission.RECORD_AUDIO"]
+        },
+        "web": {
+            "bundler": "metro",
+            "output": "static",
+            "favicon": "./assets/images/favicon.png"
+        },
+        "plugins": [
+            "expo-router",
+            "@react-native-firebase/app",
+            "@react-native-firebase/auth",
+            "@react-native-firebase/crashlytics",
+            "@react-native-google-signin/google-signin",
+            [
+                "expo-image-picker",
+                {
+                    "photosPermission": "The app accesses your photos to let you share them with your friends."
+                }
+            ],
+            [
+                "onesignal-expo-plugin",
+                {
+                    "mode": "development"
+                }
+            ]
+        ],
+        "experiments": {
+            "typedRoutes": true
+        },
+        "extra": {
+            "oneSignalAppId": "6247d01a-bfba-45c6-b768-0c3efa3eaea9",
+            "router": {
+                "origin": false
+            },
+            "eas": {
+                "build": {
+                    "experimental": {
+                        "ios": {
+                            "appExtensions": [
+                                {
+                                    "targetName": "OneSignalNotificationServiceExtension",
+                                    "bundleIdentifier": "com.nvb.threedots.OneSignalNotificationServiceExtension",
+                                    "entitlements": {
+                                        "com.apple.security.application-groups": ["group.com.nvb.threedots.onesignal"]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "projectId": "97acec38-f7a7-460b-823b-51ed60f440c1"
+            }
+        }
     }
-  }
 }

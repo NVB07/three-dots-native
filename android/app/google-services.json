@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "315301649530",
+    "firebase_url": "https://social-chat-d2b4e-default-rtdb.firebaseio.com",
+    "project_id": "social-chat-d2b4e",
+    "storage_bucket": "social-chat-d2b4e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:315301649530:android:9c3e936a950ded92c3afc3",
+        "android_client_info": {
+          "package_name": "com.nvb.threedots"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "315301649530-veenls56phfuk0q1q0alb0pdcjekt3d3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nvb.threedots",
+            "certificate_hash": "116dbf379ee3c0ba62dcfc5945e93b88312799ec"
+          }
+        },
+        {
+          "client_id": "315301649530-bkbqj75ri9sura9qpvkl725uebf51ktr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKSdgo6TjntjjphKiuZJLcEENQGXYrW_w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "315301649530-bkbqj75ri9sura9qpvkl725uebf51ktr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

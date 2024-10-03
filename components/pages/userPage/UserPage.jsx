@@ -10,6 +10,7 @@ import HeaderBack from "@/components/headerBack/HeaderBack";
 import { useRouter } from "expo-router";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import SocialLink from "./SocialLink";
+import { OneSignal } from "react-native-onesignal";
 
 import { AuthContext } from "@/components/context/AuthProvider";
 
@@ -74,7 +75,10 @@ const UserPage = ({ uid, userTabClick = false }) => {
                 {
                     text: "Đăng xuất",
                     style: "destructive",
-                    onPress: async () => await signOut(),
+                    onPress: async () => {
+                        await signOut();
+                        OneSignal.logout();
+                    },
                 },
             ],
             { cancelable: false }
@@ -115,7 +119,6 @@ const UserPage = ({ uid, userTabClick = false }) => {
         try {
             const docsWithUserUid = [];
             const querySnapshot = await firestore().collection("roomsChat").get();
-
             if (!querySnapshot.empty) {
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();

@@ -9,90 +9,6 @@ import { SheetManager } from "react-native-actions-sheet";
 
 import { AuthContext } from "@/components/context/AuthProvider";
 
-// function TabChild() {
-//     return (
-//         <Stack>
-//             {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
-//             <Stack.Screen name="+not-found" />
-//         </Stack>
-//     );
-// }
-// export default function TabLayout() {
-//     const { authUser } = useContext(AuthContext);
-//     const colorScheme = useColorScheme();
-
-//     return (
-//         <Tabs
-//             screenOptions={{
-//                 tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-//                 headerShown: false,
-//             }}
-//         >
-//             <Tabs.Screen
-//                 name="index"
-//                 options={{
-//                     title: "",
-//                     tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "home" : "home-outline"} color={color} />,
-//                 }}
-//             />
-//             <Tabs.Screen
-//                 name="notification"
-//                 options={{
-//                     title: "",
-//                     tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "notifications" : "notifications-outline"} color={color} />,
-//                 }}
-//             />
-//             <Tabs.Screen
-//                 name="add"
-//                 options={{
-//                     title: "",
-//                     tabBarButton: ({ accessibilityState, onPress }) => (
-//                         <View style={{ width: 70, alignItems: "center" }}>
-//                             <TouchableOpacity
-//                                 onPress={() => {
-//                                     SheetManager.show("NewBlogSheet", {
-//                                         payload: authUser,
-//                                     });
-//                                 }}
-//                                 style={{ borderRadius: 12, marginTop: 3, backgroundColor: "#D2D2D2FF", width: 35, height: 35, alignItems: "center" }}
-//                             >
-//                                 <TabBarIcon style={{ marginTop: 3 }} name={"add"} />
-//                             </TouchableOpacity>
-//                         </View>
-//                     ),
-//                 }}
-//             />
-//             <Tabs.Screen
-//                 name="chat"
-//                 options={{
-//                     title: "",
-//                     tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "chatbox" : "chatbox-outline"} color={color} />,
-//                 }}
-//             />
-
-//             <Tabs.Screen
-//                 name="user"
-//                 options={{
-//                     title: "",
-//                     tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "person" : "person-outline"} color={color} />,
-//                 }}
-//             />
-//             {/* <Tabs.Screen
-//                 name="user/[userid]/index"
-//                 options={{
-//                     href: null,
-//                 }}
-//             />
-//             <Tabs.Screen
-//                 name="user/edit"
-//                 options={{
-//                     href: null,
-//                 }}
-//             /> */}
-//         </Tabs>
-//     );
-// }
-
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from ".";
 import ChatScreen from "./chat";
@@ -155,7 +71,7 @@ export default function TabLayout() {
                 component={ChatScreen}
                 options={{
                     title: "",
-                    tabBarIcon: ({ color, focused }) => <ChatIcon name={focused ? "chatbox" : "chatbox-outline"} authUser={authUser} color={color} style={undefined} />,
+                    tabBarIcon: ({ color, focused }) => <ChatIcon name={focused ? "chatbox" : "chatbox-outline"} color={color} style={undefined} />,
                 }}
             />
 

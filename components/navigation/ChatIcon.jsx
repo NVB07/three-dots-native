@@ -3,18 +3,21 @@ import { useContext, useState, useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { View, Text } from "react-native";
 import { CountMessageContext } from "../context/CountMessageProvider";
-export function ChatIcon({ style, authUser, ...rest }) {
+import { AuthContext } from "@/components/context/AuthProvider";
+
+export function ChatIcon({ style, ...rest }) {
     const { messages } = useContext(CountMessageContext);
+    const { authUser } = useContext(AuthContext);
     const [countMessage, setCountMessage] = useState(0);
     useEffect(() => {
-        if (messages) {
+        if (messages && authUser) {
             let quantity = 0;
             messages.forEach((item) => {
-                if (item.data.lastMessage.uid !== authUser.uid) quantity++;
+                if (item.data?.lastMessage?.uid !== authUser?.uid) quantity++;
             });
             setCountMessage(quantity);
         }
-    }, [messages]);
+    }, [messages, authUser]);
 
     return (
         <View style={{ position: "relative" }}>

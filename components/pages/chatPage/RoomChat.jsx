@@ -3,7 +3,6 @@ import FastImage from "react-native-fast-image";
 import { Button } from "@rneui/base";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
-import messaging from "@react-native-firebase/messaging";
 import { useEffect, useState, useRef, useContext } from "react";
 import firestore from "@react-native-firebase/firestore";
 import Message from "./Message";

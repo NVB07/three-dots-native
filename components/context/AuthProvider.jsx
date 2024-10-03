@@ -28,9 +28,10 @@ const AuthProvider = ({ children }) => {
                         if (documentSnapshot.exists) {
                             const data = documentSnapshot.data();
                             setAuthUser(data);
-                            OneSignal.login(data.uid);
+                            OneSignal.login(data?.uid);
                         }
                         setInitializing(false);
+                        console.log("loged");
                     },
                     (error) => {
                         console.error("Error fetching user data: ", error);
@@ -40,7 +41,7 @@ const AuthProvider = ({ children }) => {
             return () => subscriber(); // unsubscribe on unmount
         } else if (currentUser == null) {
             setInitializing(false);
-            OneSignal.logout();
+
             setAuthUser(null); // Nếu không có currentUser, dừng loading
         }
     }, [currentUser]);

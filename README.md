@@ -1,50 +1,65 @@
-# Welcome to your Expo app 👋
+# Three Dots - Social Media App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Three Dots** là một ứng dụng mạng xã hội nơi người dùng có thể chia sẻ, kết nối và tương tác với nhau thông qua các bài viết, bình luận, tin nhắn và hồ sơ cá nhân. Ứng dụng mang đến trải nghiệm giao tiếp hiện đại và đơn giản, hỗ trợ tìm kiếm bạn bè và chia sẻ cuộc sống hàng ngày qua các nền tảng mạng xã hội khác nhau.
 
-## Get started
+## Tính năng chính
 
-1. Install dependencies
+### 1. Đăng ký/Đăng nhập
 
-   ```bash
-   npm install
-   ```
+-   Đăng ký và đăng nhập nhanh chóng qua tài khoản Google.
 
-2. Start the app
+### 2. Bài viết
 
-   ```bash
-    npx expo start
-   ```
+-   **Thêm bài viết**: Người dùng có thể tạo các bài viết mới để chia sẻ với bạn bè.
+-   **Chỉnh sửa bài viết**: Cho phép chỉnh sửa nội dung bài viết đã đăng.
+-   **Xóa bài viết**: Xóa những bài viết không còn muốn giữ.
 
-In the output, you'll find options to open the app in a
+### 3. Bình luận và Thích
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+-   **Bình luận**: Người dùng có thể bình luận và tương tác với các bài viết.
+-   **Thích bài viết**: Thể hiện sự yêu thích với các bài viết qua tính năng "Thích".
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### 4. Tìm kiếm
 
-## Get a fresh project
+-   **Tìm kiếm bài viết**: Tìm kiếm các bài viết theo từ khóa cụ thể.
+-   **Tìm kiếm người dùng**: Tìm kiếm người dùng theo tên hoặc tài khoản.
 
-When you're ready, run:
+### 5. Nhắn tin và Tìm kiếm bạn bè
 
-```bash
-npm run reset-project
-```
+-   **Nhắn tin trực tiếp**: Gửi tin nhắn riêng tư cho bạn bè trong ứng dụng.
+-   **Tìm kiếm bạn bè**: Tìm và kết nối với bạn bè thông qua tính năng tìm kiếm người dùng.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 6. Chỉnh sửa hồ sơ cá nhân
 
-## Learn more
+-   **Cập nhật tên**: Chỉnh sửa tên người dùng.
+-   **Cập nhật ảnh đại diện**: Thay đổi ảnh đại diện dễ dàng.
+-   **Liên kết mạng xã hội**: Thêm và quản lý liên kết đến các tài khoản mạng xã hội khác như:
+    -   Facebook
+    -   X (Twitter)
+    -   Instagram
+    -   TikTok
+    -   Threads
 
-To learn more about developing your project with Expo, look at the following resources:
+### 7. Thông báo
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+-   **Thông báo tin nhắn và hoạt động**: Người dùng sẽ nhận được thông báo khi có tin nhắn mới hoặc khi có tương tác với bài viết của họ.
 
-## Join the community
+## Công nghệ sử dụng
 
-Join our community of developers creating universal apps.
+Ứng dụng **Three Dots** được xây dựng trên các công nghệ hiện đại sau:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+-   **React Native - Expo, Google Sign-In, Firebase, OneSignal, React Native Elements**
+
+## Cài đặt
+
+Tải xuống file APK của ứng dụng tại liên kết sau:
+
+[Download Three Dots APK](https://drive.google.com/drive/folders/1vIyB9FXAUAXIHHnFD7HeOU43zPaRCqBP?usp=sharing)
+
+## Liên hệ
+
+Email: nvbinh.zzz@gmail.com
+
+---
+
+© 2024 Three Dots. All rights reserved.

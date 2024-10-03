@@ -13,7 +13,7 @@ export function ChatIcon({ style, ...rest }) {
         if (messages && authUser) {
             let quantity = 0;
             messages.forEach((item) => {
-                if (item.data?.lastMessage?.uid !== authUser?.uid) quantity++;
+                if (item.data?.lastMessage && item.data?.lastMessage?.uid !== authUser?.uid) quantity++;
             });
             setCountMessage(quantity);
         }

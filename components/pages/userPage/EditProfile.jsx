@@ -29,7 +29,7 @@ const EditProfile = ({ authUser, setAuthUser }) => {
     const handleDataFormat = () => {
         if (
             image === authUser.photoURL &&
-            userName === authUser.displayName &&
+            userName.trim() === authUser.displayName &&
             facebook === authUser.facebook &&
             gmail === authUser.email &&
             instagram === authUser.instagram &&
@@ -38,7 +38,7 @@ const EditProfile = ({ authUser, setAuthUser }) => {
             x === authUser.x
         ) {
             setSaveDisable(true);
-        } else if (userName === "") {
+        } else if (userName.trim() === "") {
             setSaveDisable(true);
         } else if (gmail !== "" && !gmailRegex.test(gmail)) {
             setSaveDisable(true);
@@ -144,7 +144,7 @@ const EditProfile = ({ authUser, setAuthUser }) => {
                         <TextInput
                             textAlignVertical="top"
                             multiline={false}
-                            onChangeText={(e) => setUserName(e.trim())}
+                            onChangeText={(e) => setUserName(e)}
                             value={userName}
                             // autoFocus
                             placeholder={authUser.displayName}

@@ -10,7 +10,7 @@ export const sendPushNotification = async (
 ) => {
     const body = {
         app_id: appId,
-        include_external_user_ids: [userId], // ID người dùng
+        include_external_user_ids: [userId],
         headings: { en: title },
         contents: { en: message }, // Nội dung thông báo
         ios_badgeType: "Increase",

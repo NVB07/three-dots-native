@@ -56,6 +56,7 @@ const UserPage = ({ uid, userTabClick = false }) => {
             await GoogleSignin.signOut();
             await auth().signOut();
             setAuthUser(null);
+            OneSignal.logout();
             console.log("signOut");
         } catch (e) {
             console.log(e);
@@ -77,7 +78,6 @@ const UserPage = ({ uid, userTabClick = false }) => {
                     style: "destructive",
                     onPress: async () => {
                         await signOut();
-                        OneSignal.logout();
                     },
                 },
             ],

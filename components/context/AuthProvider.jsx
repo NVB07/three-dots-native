@@ -28,7 +28,8 @@ const AuthProvider = ({ children }) => {
                         if (documentSnapshot.exists) {
                             const data = documentSnapshot.data();
                             setAuthUser(data);
-                            OneSignal.login(data?.uid);
+                            OneSignal.login(data.uid);
+                            console.log(data.uid);
                         }
                         setInitializing(false);
                         console.log("loged");

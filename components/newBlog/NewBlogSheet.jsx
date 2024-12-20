@@ -1,4 +1,4 @@
-import { View, StyleSheet, TextInput, Keyboard } from "react-native";
+import { View, StyleSheet, TextInput, Keyboard, TouchableOpacity } from "react-native";
 import storage from "@react-native-firebase/storage";
 import ActionSheet, { useSheetPayload } from "react-native-actions-sheet";
 import { Button, Overlay } from "@rneui/themed";
@@ -8,13 +8,17 @@ import FastImage from "react-native-fast-image";
 import { Text } from "@rneui/base";
 import * as ImagePicker from "expo-image-picker";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { Picker } from "@react-native-picker/picker";
 
 import { addBlog } from "@/components/firebase/service";
 function NewBlogSheet() {
     const [text, setText] = useState("");
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [privacyValue, setPrivacyValue] = useState("public");
     const payload = useSheetPayload("NewBlogSheet");
 
     const uploadImageToStorage = async (imageUri) => {
@@ -78,6 +82,7 @@ function NewBlogSheet() {
                 normalText: text,
                 imageURL: imageUrl,
             },
+            privacyValue: privacyValue,
         });
         if (addData) {
             Keyboard.dismiss();
@@ -115,7 +120,7 @@ function NewBlogSheet() {
                     </View>
                 </View>
                 <View style={styles.buttonGroup}>
-                    <View style={{ paddingBottom: 8 }}>
+                    <View style={{ paddingBottom: 8, flexDirection: "row", justifyContent: "space-between" }}>
                         <View style={styles.newBlogAction}>
                             <FastImage
                                 style={styles.avatar}
@@ -130,6 +135,24 @@ function NewBlogSheet() {
                                 <Text style={{ fontSize: 14, marginLeft: 6, color: "#999" }}>Tạo bài viết</Text>
                             </View>
                         </View>
+                        <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
+                            <Text style={{ flexDirection: "row", alignItems: "flex-start" }}>
+                                {privacyValue === "public" ? (
+                                    <FontAwesome5 name="globe-asia" size={18} color="#666" />
+                                ) : (
+                                    <Ionicons name="people" size={18} color="#666" />
+                                )}
+                            </Text>
+                            <Picker
+                                mode="dropdown"
+                                selectedValue={privacyValue}
+                                onValueChange={(itemValue) => setPrivacyValue(itemValue)}
+                                style={{ width: 50, marginTop: -17, marginLeft: -15, marginRight: -15 }}
+                            >
+                                <Picker.Item label="Công khai" value="public" />
+                                <Picker.Item label="Người theo dõi" value="friend" />
+                            </Picker>
+                        </View>
                     </View>
                     <TextInput
                         textAlignVertical="top"
@@ -139,6 +162,7 @@ function NewBlogSheet() {
                         placeholder="Có gì mới?"
                         style={styles.textarea}
                     />
+
                     <View style={styles.container}>
                         <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
                             <View style={{ width: 50, height: 50, borderRadius: 9999, padding: 0 }}>
@@ -204,7 +228,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     newBlogAction: {
-        width: "100%",
+        // width: "100%",
+
         flexDirection: "row",
     },
     avatar: {

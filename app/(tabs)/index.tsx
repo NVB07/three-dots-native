@@ -10,7 +10,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
     main: {
-        paddingTop: 40,
+        paddingTop: 30,
         flex: 1,
     },
 });

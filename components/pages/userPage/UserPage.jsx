@@ -11,6 +11,7 @@ import { useRouter } from "expo-router";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import SocialLink from "./SocialLink";
 import { OneSignal } from "react-native-onesignal";
+import { followUser } from "@/components/firebase/service";
 
 import { AuthContext } from "@/components/context/AuthProvider";
 
@@ -20,6 +21,7 @@ const UserPage = ({ uid, userTabClick = false }) => {
     const [userData, setUserData] = useState();
     const [userBlog, setUserBlog] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [followTitleButton, setFollowTitleButton] = useState("---");
     const router = useRouter();
     const [refreshing, setRefreshing] = useState(false);
 
@@ -93,6 +95,13 @@ const UserPage = ({ uid, userTabClick = false }) => {
                 if (documentSnapshot.exists) {
                     const data = documentSnapshot.data();
                     setUserData(data);
+                    setFollowTitleButton(() => {
+                        if (data.followers?.includes(authUser.uid)) {
+                            return "Bỏ theo dõi";
+                        } else {
+                            return "Theo dõi";
+                        }
+                    });
                 }
             });
         const subscriberBlog = firestore()
@@ -159,21 +168,36 @@ const UserPage = ({ uid, userTabClick = false }) => {
             console.error("Error handling chat: ", error);
         }
     };
+    const handleFollow = async () => {
+        setFollowTitleButton("...");
+        const title = await followUser(authUser.uid, uid);
+        setFollowTitleButton(title);
+    };
 
     return (
         <View style={{ paddingBottom: 30 }}>
             <HeaderBack title={userData?.displayName} />
             <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} style={{ padding: 12 }}>
                 <View style={{ width: "100%", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 20 }}>
-                    <View style={{ width: "70%" }}>
-                        <Text style={{ fontSize: 18, fontWeight: "bold" }}>{userData?.displayName}</Text>
-                        <View style={{ width: "100%", height: 30 }}>
-                            <SocialLink userData={userData} />
+                    <View style={{ width: "60%", justifyContent: "flex-start", height: "100%" }}>
+                        <View style={{ marginBottom: 12 }}>
+                            <Text style={{ fontSize: 18, fontWeight: "bold" }}>{userData?.displayName}</Text>
+                            <View style={{ width: "100%", height: 30 }}>
+                                <SocialLink userData={userData} />
+                            </View>
+                        </View>
+                        <View style={{ flexDirection: "row", paddingBottom: 8 }}>
+                            <Button type="clear" titleStyle={{ color: "#666", fontSize: 15 }} buttonStyle={{ padding: 0, paddingHorizontal: 0 }}>
+                                <Text> {userData?.following?.length ? userData?.following?.length + " đang theo dõi," : "0 đang theo dõi,"}</Text>
+                            </Button>
+                            <Button type="clear" titleStyle={{ color: "#666", fontSize: 15 }} buttonStyle={{ padding: 0, paddingHorizontal: 0 }}>
+                                <Text> {userData?.followers?.length ? userData?.followers?.length + " người theo dõi" : " 0 người theo dõi"}</Text>
+                            </Button>
                         </View>
                     </View>
-                    <View style={{ width: "30%", alignItems: "flex-end" }}>
+                    <View style={{ width: "40%", alignItems: "flex-end" }}>
                         <FastImage
-                            style={{ width: 64, height: 64, borderRadius: 9999 }}
+                            style={{ width: 90, height: 90, borderRadius: 9999 }}
                             source={{
                                 uri: userData?.photoURL,
                                 priority: FastImage.priority.normal,
@@ -182,17 +206,50 @@ const UserPage = ({ uid, userTabClick = false }) => {
                         />
                     </View>
                 </View>
+
                 <View style={{ width: "100%", borderBottomWidth: 1, borderColor: "#ccc", paddingBottom: 20, marginBottom: 20 }}>
                     {!myUserPage ? (
-                        <Button disabled={loading} loading={loading} onPress={handleChat} radius={"md"}>
-                            Nhắn tin
-                        </Button>
+                        <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
+                            <View style={{ width: "49%" }}>
+                                <Button buttonStyle={{ borderWidth: 2 }} disabled={loading} loading={loading} onPress={handleChat} radius={"md"}>
+                                    Nhắn tin
+                                </Button>
+                            </View>
+                            <View style={{ width: "49%" }}>
+                                <Button
+                                    buttonStyle={{ borderColor: "#999", borderWidth: 2 }}
+                                    disabled={loading}
+                                    loading={followTitleButton === "..."}
+                                    onPress={handleFollow}
+                                    radius={"md"}
+                                    type="outline"
+                                    titleStyle={{ color: "#333" }}
+                                    color="error"
+                                >
+                                    {followTitleButton}
+                                </Button>
+                            </View>
+                        </View>
                     ) : (
                         <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
-                            <Button type="outline" onPress={() => router.push(`/userid/edit`)} containerStyle={{ width: "80%" }} radius={"md"}>
+                            <Button
+                                titleStyle={{ color: "#333" }}
+                                buttonStyle={{ borderColor: "#999", borderWidth: 2 }}
+                                type="outline"
+                                onPress={() => router.push(`/userid/edit`)}
+                                containerStyle={{ width: "80%" }}
+                                radius={"md"}
+                            >
                                 Sửa thông tin
                             </Button>
-                            <Button onPress={alertSignOut} type="outline" buttonStyle={{ height: 40 }} containerStyle={{ width: "17%", height: 40 }} radius={"md"}>
+                            <Button
+                                onPress={alertSignOut}
+                                type="outline"
+                                titleStyle={{ color: "red" }}
+                                buttonStyle={{ height: 42, borderColor: "red", borderWidth: 2, padding: 0 }}
+                                containerStyle={{ width: "17%", padding: 0 }}
+                                radius={"md"}
+                            >
                                 <Feather name="log-out" size={24} color="red" />
                             </Button>
                         </View>

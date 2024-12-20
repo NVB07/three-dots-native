@@ -1,16 +1,20 @@
-import React, { useState, useEffect, useContext, useCallback, memo } from "react";
+import React, { useState, useEffect, useContext, useCallback, memo, useRef } from "react";
 import firestore from "@react-native-firebase/firestore";
-import { StyleSheet, ScrollView, View, Text, Pressable, RefreshControl } from "react-native";
+import { StyleSheet, ScrollView, View, Text, Pressable, RefreshControl, Animated } from "react-native";
 import FastImage from "react-native-fast-image";
 // import auth from "@react-native-firebase/auth";
 // import { ThemedText } from "../ThemedText";
 import Blog from "@/components/blog/Blog";
 import { SheetManager } from "react-native-actions-sheet";
 import { AuthContext } from "@/components/context/AuthProvider";
+import { Tab, TabView } from "@rneui/themed";
 function HomePage() {
     const { authUser } = useContext(AuthContext);
     const [blogs, setBlogs] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
+    const [indexTab, setIndexTab] = useState(0);
+    const [headerHeight, setheaderHeight] = useState(30);
+    const [lastOffset, setLastOffset] = useState(0);
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
@@ -33,56 +37,116 @@ function HomePage() {
             .orderBy("createAt", "desc")
             .onSnapshot((querySnapshot) => {
                 let blogTempArray = [];
-                querySnapshot.forEach((documentSnapshot) => {
-                    blogTempArray.push(documentSnapshot.id);
-                });
+                if (querySnapshot) {
+                    querySnapshot.forEach((documentSnapshot) => {
+                        blogTempArray.push(documentSnapshot.id);
+                    });
+                }
+
                 setBlogs(blogTempArray);
             });
 
         return () => subscriber();
     }, []);
 
+    const handleScroll = (event) => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        if (offsetY > lastOffset && offsetY > 30) {
+            setheaderHeight(0);
+        } else if (offsetY < lastOffset || offsetY < 30) {
+            setheaderHeight(30);
+        }
+        setLastOffset(offsetY);
+    };
     return (
         <View style={styles.main}>
-            <ScrollView style={styles.scroll} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-                <View style={styles.header}>
-                    <Pressable
-                        type="clear"
-                        onPress={() =>
-                            SheetManager.show("NewBlogSheet", {
-                                payload: authUser,
-                            })
-                        }
-                        radius={"sm"}
-                        style={({ pressed }) => [
-                            {
-                                backgroundColor: pressed ? "#C2C2C2FF" : "#E2E2E2FF",
-                            },
-                            styles.buttonNewBlog,
-                        ]}
-                    >
-                        <View style={styles.newBlogAction}>
-                            <FastImage
-                                style={styles.avatar}
-                                source={{
-                                    uri: authUser?.photoURL,
-                                    priority: FastImage.priority.low,
-                                }}
-                                resizeMode={FastImage.resizeMode.cover}
-                            />
-                            <View>
-                                <Text style={styles.headerText}>{authUser?.displayName}</Text>
-                                <Text style={{ color: "#999", marginLeft: 6 }}>Thêm bài viết</Text>
-                            </View>
+            <View
+                style={{
+                    width: "100%",
+                    borderBottomWidth: 1,
+                    borderBottomColor: "#cccccc",
+                    backgroundColor: "#f2f2f2",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    zIndex: 999,
+                }}
+            >
+                <Animated.View style={{ height: headerHeight }}>
+                    <Text>Header</Text>
+                </Animated.View>
+                <Tab
+                    buttonStyle={{ padding: 0, borderRadius: 9 }}
+                    containerStyle={{ height: 25, padding: 0, paddingVertical: 0 }}
+                    value={indexTab}
+                    onChange={(e) => setIndexTab(e)}
+                    indicatorStyle={{
+                        backgroundColor: "#666",
+                        marginBottom: -1,
+                        height: 3,
+                    }}
+                    variant="default"
+                >
+                    <Tab.Item
+                        buttonStyle={{ padding: 0 }}
+                        containerStyle={{ padding: 0 }}
+                        title="Mọi người"
+                        titleStyle={(active) => ({ fontSize: 14, color: active ? "#333" : "#7c7c7c" })}
+                    />
+                    <Tab.Item
+                        buttonStyle={{ padding: 0 }}
+                        containerStyle={{ padding: 0 }}
+                        title="Đang theo dõi"
+                        titleStyle={(active) => ({ fontSize: 14, color: active ? "#333" : "#7c7c7c" })}
+                    />
+                </Tab>
+            </View>
+            <TabView value={indexTab} onChange={setIndexTab} animationType="spring" disableSwipe>
+                <TabView.Item style={{ width: "100%" }}>
+                    <ScrollView style={styles.scroll} onScroll={handleScroll} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+                        <View style={styles.header}>
+                            <Pressable
+                                type="clear"
+                                onPress={() =>
+                                    SheetManager.show("NewBlogSheet", {
+                                        payload: authUser,
+                                    })
+                                }
+                                radius={"sm"}
+                                style={({ pressed }) => [
+                                    {
+                                        backgroundColor: pressed ? "#C2C2C2FF" : "#E2E2E2FF",
+                                    },
+                                    styles.buttonNewBlog,
+                                ]}
+                            >
+                                <View style={styles.newBlogAction}>
+                                    <FastImage
+                                        style={styles.avatar}
+                                        source={{
+                                            uri: authUser?.photoURL,
+                                            priority: FastImage.priority.low,
+                                        }}
+                                        resizeMode={FastImage.resizeMode.cover}
+                                    />
+                                    <View>
+                                        <Text style={styles.headerText}>{authUser?.displayName}</Text>
+                                        <Text style={{ color: "#999", marginLeft: 6 }}>Thêm bài viết</Text>
+                                    </View>
+                                </View>
+                            </Pressable>
                         </View>
-                    </Pressable>
-                </View>
 
-                {blogs.map((blogId, index) => {
-                    return <MemoizedBlogs blogId={blogId} key={index} authUser={authUser} />;
-                })}
-                <View style={{ width: "100%", height: 20 }}></View>
-            </ScrollView>
+                        {blogs.map((blogId, index) => {
+                            return <MemoizedBlogs blogId={blogId} key={index} authUser={authUser} privacyValue={"public"} />;
+                        })}
+                        <View style={{ width: "100%", height: 20 }}></View>
+                    </ScrollView>
+                </TabView.Item>
+                <TabView.Item style={{ width: "100%" }}>
+                    <Text h1>Favorite</Text>
+                </TabView.Item>
+            </TabView>
         </View>
     );
 }
@@ -95,7 +159,7 @@ const styles = StyleSheet.create({
     },
     overlay: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: "rgba(255,255,255,0.7)",
+        backgroundColor: "hsla(0, 0.00%, 100.00%, 0.70)",
     },
     header: {
         backgroundColor: "#D8D8D8FF",
@@ -117,6 +181,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 12,
         paddingBottom: 30,
+        paddingTop: 80,
     },
     headerText: {
         fontSize: 16,

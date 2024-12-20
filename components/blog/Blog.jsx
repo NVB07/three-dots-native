@@ -8,7 +8,7 @@ import CountReact from "./CountReact";
 import { Skeleton } from "@rneui/themed";
 import { useRouter } from "expo-router";
 
-const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
+const Blog = ({ blogId, authUser, inMyUserPage = false, privacyValue }) => {
     const router = useRouter();
     const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
 
@@ -104,7 +104,11 @@ const Blog = ({ blogId, authUser, inMyUserPage = false }) => {
             return () => subscriber();
         }
     }, [blogData?.author.uid]);
-
+    if (privacyValue === "public" && blogData?.privacyValue === "friend") {
+        return null;
+    } else if (privacyValue === "friend" && blogData?.privacyValue === "public") {
+        return null;
+    }
     return (
         <Text style={styles.main}>
             <View style={styles.blog}>

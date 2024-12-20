@@ -120,3 +120,48 @@ export async function updateUserInformation(userId, oldImagePath, imageUpdate, d
         return false;
     }
 }
+
+export async function followUser(myUid, friendUid) {
+    const myUserRef = firestore().collection("users").doc(myUid);
+    const friendUserRef = firestore().collection("users").doc(friendUid);
+
+    try {
+        const userDoc = await myUserRef.get();
+        const friendDoc = await friendUserRef.get();
+
+        if (!userDoc.exists || !friendDoc.exists) {
+            throw new Error("User or friend document does not exist");
+        }
+
+        const userData = userDoc.data();
+        const friendData = friendDoc.data();
+
+        const following = userData.following || [];
+        const followers = friendData.followers || [];
+
+        if (following.includes(friendUid) && followers.includes(myUid)) {
+            // Chạy 2 thao tác đồng thời
+            await Promise.all([
+                myUserRef.update({
+                    following: firestore.FieldValue.arrayRemove(friendUid),
+                }),
+                friendUserRef.update({
+                    followers: firestore.FieldValue.arrayRemove(myUid),
+                }),
+            ]);
+            console.log(" un following");
+            return "Theo dõi";
+        } else {
+            await Promise.all([
+                myUserRef.update({
+                    following: firestore.FieldValue.arrayUnion(friendUid),
+                }),
+                friendUserRef.update({
+                    followers: firestore.FieldValue.arrayUnion(myUid),
+                }),
+            ]);
+            console.log("following");
+            return "Bỏ theo dõi";
+        }
+    } catch (error) {}
+}

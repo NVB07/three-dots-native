@@ -6,6 +6,9 @@ import { SheetManager } from "react-native-actions-sheet";
 import { useState } from "react";
 import FastImage from "react-native-fast-image";
 import { Text } from "@rneui/base";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { Picker } from "@react-native-picker/picker";
 
 import AntDesign from "@expo/vector-icons/AntDesign";
 
@@ -13,6 +16,7 @@ import { updateBlog } from "@/components/firebase/service";
 function EditBlogSheet() {
     const [loading, setLoading] = useState(false);
     const oldData = useSheetPayload("EditBlogSheet");
+    const [privacyValue, setPrivacyValue] = useState("public");
     const [text, setText] = useState(oldData?.blogData.post.normalText);
 
     const handleUpdateBlog = async () => {
@@ -70,7 +74,7 @@ function EditBlogSheet() {
                     </View>
                 </View>
                 <View style={styles.buttonGroup}>
-                    <View style={{ paddingBottom: 8 }}>
+                    <View style={{ paddingBottom: 8, flexDirection: "row", justifyContent: "space-between" }}>
                         <View style={styles.newBlogAction}>
                             <FastImage
                                 style={styles.avatar}
@@ -84,6 +88,27 @@ function EditBlogSheet() {
                                 <Text style={styles.headerText}>{oldData?.authUser.displayName}</Text>
                                 <Text style={{ fontSize: 14, marginLeft: 6, color: "#999" }}>Sửa bài viết</Text>
                             </View>
+                        </View>
+                        <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
+                            <Text style={{ flexDirection: "row", alignItems: "flex-start" }}>
+                                {privacyValue === "public" ? (
+                                    <FontAwesome5 name="globe-asia" size={18} color="#666" />
+                                ) : privacyValue === "friend" ? (
+                                    <Ionicons name="people" size={18} color="#666" />
+                                ) : (
+                                    <FontAwesome5 name="lock" size={18} color="#666" />
+                                )}
+                            </Text>
+                            <Picker
+                                mode="dropdown"
+                                selectedValue={privacyValue}
+                                onValueChange={(itemValue) => setPrivacyValue(itemValue)}
+                                style={{ width: 50, marginTop: -17, marginLeft: -15, marginRight: -15 }}
+                            >
+                                <Picker.Item label="Công khai" value="public" />
+                                <Picker.Item label="Người theo dõi" value="friend" />
+                                <Picker.Item label="Chỉ mình tôi" value="myself" />
+                            </Picker>
                         </View>
                     </View>
                     <TextInput
@@ -148,7 +173,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     newBlogAction: {
-        width: "100%",
+        // width: "100%",
         flexDirection: "row",
     },
     avatar: {

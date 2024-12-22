@@ -7,8 +7,10 @@ import FastImage from "react-native-fast-image";
 import CountReact from "./CountReact";
 import { Skeleton } from "@rneui/themed";
 import { useRouter } from "expo-router";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
-const Blog = ({ blogId, authUser, inMyUserPage = false, privacyValue }) => {
+const Blog = ({ blogId, authUser, inMyUserPage = false, privacyValue, lastBlog = false }) => {
     const router = useRouter();
     const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
 
@@ -104,13 +106,9 @@ const Blog = ({ blogId, authUser, inMyUserPage = false, privacyValue }) => {
             return () => subscriber();
         }
     }, [blogData?.author.uid]);
-    if (privacyValue === "public" && blogData?.privacyValue === "friend") {
-        return null;
-    } else if (privacyValue === "friend" && blogData?.privacyValue === "public") {
-        return null;
-    }
+
     return (
-        <Text style={styles.main}>
+        <Text style={{ ...styles.main, marginBottom: lastBlog ? 70 : 12 }}>
             <View style={styles.blog}>
                 <View style={styles.avatar}>
                     {authorData?.photoURL ? (
@@ -138,7 +136,20 @@ const Blog = ({ blogId, authUser, inMyUserPage = false, privacyValue }) => {
                             ) : (
                                 <Skeleton animation="wave" width={100} height={22} />
                             )}
-                            <Text style={styles.postTime}>{blogData?.createAt && handleConvertDate(blogData?.createAt)}</Text>
+                            {authorData?.displayName ? (
+                                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                    <Text style={styles.postTime}>{blogData?.createAt && handleConvertDate(blogData?.createAt)}</Text>
+                                    <Text style={{ color: "#888", marginLeft: 4 }}>
+                                        {blogData?.privacyValue === "friend" ? (
+                                            <Ionicons name="people" size={14} color="#666" />
+                                        ) : (
+                                            <FontAwesome5 name="globe-asia" size={14} color="#666" />
+                                        )}
+                                    </Text>
+                                </View>
+                            ) : (
+                                <Skeleton animation="wave" width={100} height={18} style={{ marginVertical: 2 }} />
+                            )}
                         </View>
                         <Option isMyBlog={isMyBlog} authUser={authUser} blogData={blogData} blogId={blogId} />
                     </View>

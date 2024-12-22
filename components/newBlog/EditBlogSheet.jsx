@@ -3,7 +3,7 @@ import { View, StyleSheet, TextInput, Keyboard, Alert } from "react-native";
 import ActionSheet, { useSheetPayload } from "react-native-actions-sheet";
 import { Button, Overlay } from "@rneui/themed";
 import { SheetManager } from "react-native-actions-sheet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FastImage from "react-native-fast-image";
 import { Text } from "@rneui/base";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -16,7 +16,7 @@ import { updateBlog } from "@/components/firebase/service";
 function EditBlogSheet() {
     const [loading, setLoading] = useState(false);
     const oldData = useSheetPayload("EditBlogSheet");
-    const [privacyValue, setPrivacyValue] = useState("public");
+    const [privacyValue, setPrivacyValue] = useState(oldData?.blogData.privacyValue);
     const [text, setText] = useState(oldData?.blogData.post.normalText);
 
     const handleUpdateBlog = async () => {
@@ -30,6 +30,7 @@ function EditBlogSheet() {
             "post.content": text.trim(),
             "post.searchKeywords": searchKeywords,
             "post.normalText": text.trim(),
+            privacyValue: privacyValue,
         });
         if (updateData) {
             Keyboard.dismiss();
@@ -48,6 +49,7 @@ function EditBlogSheet() {
 
     return (
         <ActionSheet
+            keyboardHandlerEnabled={false}
             gestureEnabled={true}
             indicatorStyle={{
                 width: 100,
@@ -93,10 +95,8 @@ function EditBlogSheet() {
                             <Text style={{ flexDirection: "row", alignItems: "flex-start" }}>
                                 {privacyValue === "public" ? (
                                     <FontAwesome5 name="globe-asia" size={18} color="#666" />
-                                ) : privacyValue === "friend" ? (
-                                    <Ionicons name="people" size={18} color="#666" />
                                 ) : (
-                                    <FontAwesome5 name="lock" size={18} color="#666" />
+                                    <Ionicons name="people" size={18} color="#666" />
                                 )}
                             </Text>
                             <Picker
@@ -107,7 +107,6 @@ function EditBlogSheet() {
                             >
                                 <Picker.Item label="Công khai" value="public" />
                                 <Picker.Item label="Người theo dõi" value="friend" />
-                                <Picker.Item label="Chỉ mình tôi" value="myself" />
                             </Picker>
                         </View>
                     </View>
@@ -124,7 +123,12 @@ function EditBlogSheet() {
                         <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
                             <View style={{ width: 50, height: 50, borderRadius: 9999, padding: 0 }}></View>
                             <View style={{ width: 50, height: 50, borderRadius: 9999, padding: 0 }}>
-                                <Button disabled={!text || text === oldData?.blogData.post.normalText} onPress={handleUpdateBlog} type="solid" radius={9999}>
+                                <Button
+                                    disabled={!text || (text === oldData?.blogData.post.normalText && privacyValue === oldData?.blogData.privacyValue)}
+                                    onPress={handleUpdateBlog}
+                                    type="solid"
+                                    radius={9999}
+                                >
                                     <AntDesign name="arrowright" size={24} color="white" />
                                 </Button>
                             </View>

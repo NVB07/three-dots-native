@@ -2,8 +2,6 @@ import React, { useState, useEffect, useContext, useCallback, memo, useRef } fro
 import firestore from "@react-native-firebase/firestore";
 import { StyleSheet, ScrollView, View, Text, Pressable, RefreshControl, Animated } from "react-native";
 import FastImage from "react-native-fast-image";
-// import auth from "@react-native-firebase/auth";
-// import { ThemedText } from "../ThemedText";
 import Blog from "@/components/blog/Blog";
 import { SheetManager } from "react-native-actions-sheet";
 import { AuthContext } from "@/components/context/AuthProvider";
@@ -11,6 +9,7 @@ import { Tab, TabView } from "@rneui/themed";
 function HomePage() {
     const { authUser } = useContext(AuthContext);
     const [blogs, setBlogs] = useState([]);
+    const [followingBlogs, setFollowingBlogs] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const [indexTab, setIndexTab] = useState(0);
     const [headerHeight, setheaderHeight] = useState(30);
@@ -20,6 +19,7 @@ function HomePage() {
         setRefreshing(true);
         firestore()
             .collection("blogs")
+            .where("privacyValue", "==", "public")
             .orderBy("createAt", "desc")
             .onSnapshot((querySnapshot) => {
                 let blogTempArray = [];
@@ -34,6 +34,7 @@ function HomePage() {
     useEffect(() => {
         const subscriber = firestore()
             .collection("blogs")
+            .where("privacyValue", "==", "public")
             .orderBy("createAt", "desc")
             .onSnapshot((querySnapshot) => {
                 let blogTempArray = [];
@@ -42,11 +43,26 @@ function HomePage() {
                         blogTempArray.push(documentSnapshot.id);
                     });
                 }
-
                 setBlogs(blogTempArray);
             });
+        const subscriberFollowing = firestore()
+            .collection("blogs")
+            .where("author.uid", "in", authUser?.following || [])
+            .orderBy("createAt", "desc")
+            .onSnapshot((querySnapshot) => {
+                let blogTempArray = [];
+                if (querySnapshot) {
+                    querySnapshot.forEach((documentSnapshot) => {
+                        blogTempArray.push(documentSnapshot.id);
+                    });
+                }
+                setFollowingBlogs(blogTempArray);
+            });
 
-        return () => subscriber();
+        return () => {
+            subscriber();
+            subscriberFollowing();
+        };
     }, []);
 
     const handleScroll = (event) => {
@@ -73,7 +89,11 @@ function HomePage() {
                 }}
             >
                 <Animated.View style={{ height: headerHeight }}>
-                    <Text>Header</Text>
+                    <View
+                        style={{ width: "100%", height: headerHeight > 0 ? headerHeight + 20 : 0, paddingHorizontal: 12, alignItems: "center", justifyContent: "center" }}
+                    >
+                        <Text style={{ fontWeight: 600, fontSize: 30, color: "black", fontFamily: "Allura" }}>Three Dots</Text>
+                    </View>
                 </Animated.View>
                 <Tab
                     buttonStyle={{ padding: 0, borderRadius: 9 }}
@@ -138,13 +158,51 @@ function HomePage() {
                         </View>
 
                         {blogs.map((blogId, index) => {
-                            return <MemoizedBlogs blogId={blogId} key={index} authUser={authUser} privacyValue={"public"} />;
+                            return <MemoizedBlogs blogId={blogId} key={index} authUser={authUser} privacyValue={"public"} lastBlog={index + 1 === blogs.length} />;
                         })}
                         <View style={{ width: "100%", height: 20 }}></View>
                     </ScrollView>
                 </TabView.Item>
                 <TabView.Item style={{ width: "100%" }}>
-                    <Text h1>Favorite</Text>
+                    <ScrollView style={styles.scroll} onScroll={handleScroll} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+                        <View style={styles.header}>
+                            <Pressable
+                                type="clear"
+                                onPress={() =>
+                                    SheetManager.show("NewBlogSheet", {
+                                        payload: authUser,
+                                    })
+                                }
+                                radius={"sm"}
+                                style={({ pressed }) => [
+                                    {
+                                        backgroundColor: pressed ? "#C2C2C2FF" : "#E2E2E2FF",
+                                    },
+                                    styles.buttonNewBlog,
+                                ]}
+                            >
+                                <View style={styles.newBlogAction}>
+                                    <FastImage
+                                        style={styles.avatar}
+                                        source={{
+                                            uri: authUser?.photoURL,
+                                            priority: FastImage.priority.low,
+                                        }}
+                                        resizeMode={FastImage.resizeMode.cover}
+                                    />
+                                    <View>
+                                        <Text style={styles.headerText}>{authUser?.displayName}</Text>
+                                        <Text style={{ color: "#999", marginLeft: 6 }}>Thêm bài viết</Text>
+                                    </View>
+                                </View>
+                            </Pressable>
+                        </View>
+
+                        {followingBlogs.map((blogId, index) => {
+                            return <MemoizedBlogs blogId={blogId} key={index} authUser={authUser} privacyValue={"public"} lastBlog={index + 1 === blogs.length} />;
+                        })}
+                        <View style={{ width: "100%", height: 20 }}></View>
+                    </ScrollView>
                 </TabView.Item>
             </TabView>
         </View>
@@ -180,7 +238,6 @@ const styles = StyleSheet.create({
     scroll: {
         flex: 1,
         padding: 12,
-        paddingBottom: 30,
         paddingTop: 80,
     },
     headerText: {

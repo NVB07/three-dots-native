@@ -19,6 +19,7 @@ export default function RootLayout() {
     PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
     const [loaded] = useFonts({
         SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+        Allura: require("../assets/fonts/Allura-Regular.ttf"),
     });
     const router = useRouter();
     useEffect(() => {

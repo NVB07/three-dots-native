@@ -53,6 +53,7 @@ function SheetOption() {
 
     return (
         <ActionSheet
+            keyboardHandlerEnabled={false}
             gestureEnabled={true}
             indicatorStyle={{
                 width: 100,
@@ -75,11 +76,11 @@ function SheetOption() {
                             type="clear"
                             buttonStyle={styles.buttonItem}
                             titleStyle={styles.titleStyle}
-                            onPress={() =>
+                            onPress={() => {
                                 SheetManager.show("EditBlogSheet", {
                                     payload: { authUser: sheetData.authUser, blogData: sheetData.blogData, blogId: sheetData.blogId },
-                                })
-                            }
+                                });
+                            }}
                         />
                     )}
                     <Button

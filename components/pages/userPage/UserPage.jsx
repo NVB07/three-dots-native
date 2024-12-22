@@ -218,7 +218,7 @@ const UserPage = ({ uid, userTabClick = false }) => {
                             <View style={{ width: "49%" }}>
                                 <Button
                                     buttonStyle={{ borderColor: "#999", borderWidth: 2 }}
-                                    disabled={loading}
+                                    disabled={followTitleButton === "..."}
                                     loading={followTitleButton === "..."}
                                     onPress={handleFollow}
                                     radius={"md"}

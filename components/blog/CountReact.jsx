@@ -2,7 +2,7 @@ import { Pressable, Text, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect } from "react";
 import firestore from "@react-native-firebase/firestore";
-import { SheetManager } from "react-native-actions-sheet";
+import { sendPushNotification } from "@/components/oneSignal/notification";
 import { useRouter } from "expo-router";
 
 const CountReact = ({ authUser, blogId, blogData, authorData, showSheet = false, imageSize, comments }) => {
@@ -63,13 +63,16 @@ const CountReact = ({ authUser, blogId, blogData, authorData, showSheet = false,
     }, [blogId]);
 
     const handleLikePost = () => {
-        setLiked((prev) => {
+        console.log(authorData.uid);
+
+        setLiked(async (prev) => {
             firestore()
                 .collection("blogs")
                 .doc(blogId)
                 .update({
                     liked: !prev ? firestore.FieldValue.arrayUnion(authUser.uid) : firestore.FieldValue.arrayRemove(authUser.uid),
                 });
+            if (!prev) await sendPushNotification(authorData.uid, `Lượt thích bài viết `, `${authUser.displayName} đã thích bài viết của bạn`);
             !prev;
         });
     };

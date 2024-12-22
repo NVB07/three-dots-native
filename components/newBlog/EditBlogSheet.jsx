@@ -124,7 +124,10 @@ function EditBlogSheet() {
                             <View style={{ width: 50, height: 50, borderRadius: 9999, padding: 0 }}></View>
                             <View style={{ width: 50, height: 50, borderRadius: 9999, padding: 0 }}>
                                 <Button
-                                    disabled={!text || (text === oldData?.blogData.post.normalText && privacyValue === oldData?.blogData.privacyValue)}
+                                    disabled={
+                                        (!text && privacyValue === oldData?.blogData.privacyValue) ||
+                                        (text === oldData?.blogData.post.normalText && privacyValue === oldData?.blogData.privacyValue)
+                                    }
                                     onPress={handleUpdateBlog}
                                     type="solid"
                                     radius={9999}

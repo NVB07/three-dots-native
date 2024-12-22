@@ -29,6 +29,7 @@ const AuthProvider = ({ children }) => {
                             const data = documentSnapshot.data();
                             setAuthUser(data);
                             OneSignal.login(data.uid);
+                            console.log("uid login: ", data.uid);
                         }
                         setInitializing(false);
                     },
@@ -44,7 +45,6 @@ const AuthProvider = ({ children }) => {
             setAuthUser(null); // Nếu không có currentUser, dừng loading
         }
     }, [currentUser]);
-
     if (initializing) return <Loading />;
 
     if (!authUser && !initializing) {

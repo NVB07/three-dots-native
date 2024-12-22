@@ -43,7 +43,7 @@ const Loading = () => {
                     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
                         <Image style={styles.logo} source={require("@/assets/images/logo128.png")} />
                     </Animated.View>
-                    <Text style={{ fontSize: 32, fontWeight: "bold", color: "#0d9b00", marginBottom: 50 }}>Three Dots</Text>
+                    <Text style={{ fontSize: 60, color: "#000", marginBottom: 0, fontFamily: "Allura" }}>Three Dots</Text>
                     <Button loadingProps={{ size: 80, color: "#000" }} loading type="clear" />
                     <Text style={{ fontSize: 24, fontWeight: "normal", marginTop: 10 }}>Đang xác thực...</Text>
                 </View>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback, memo, useRef } from "react";
+import React, { useState, useEffect, useContext, memo } from "react";
 import firestore from "@react-native-firebase/firestore";
 import { StyleSheet, ScrollView, View, Text, Pressable, RefreshControl, Animated } from "react-native";
 import FastImage from "react-native-fast-image";
@@ -11,11 +11,12 @@ function HomePage() {
     const [blogs, setBlogs] = useState([]);
     const [followingBlogs, setFollowingBlogs] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
+    const [refreshingFollowing, setRefreshingFollowing] = useState(false);
     const [indexTab, setIndexTab] = useState(0);
     const [headerHeight, setheaderHeight] = useState(30);
     const [lastOffset, setLastOffset] = useState(0);
 
-    const onRefresh = useCallback(() => {
+    const onRefresh = () => {
         setRefreshing(true);
         firestore()
             .collection("blogs")
@@ -29,7 +30,30 @@ function HomePage() {
                 setBlogs(blogTempArray);
                 setRefreshing(false);
             });
-    }, []);
+    };
+    const onRefreshFollowing = () => {
+        console.log("refreshing");
+
+        setRefreshingFollowing(true);
+        if (authUser?.following?.length > 0) {
+            firestore()
+                .collection("blogs")
+                .where("author.uid", "in", authUser?.following)
+                .orderBy("createAt", "desc")
+                .onSnapshot((querySnapshot) => {
+                    let blogTempArray = [];
+                    if (querySnapshot) {
+                        querySnapshot.forEach((documentSnapshot) => {
+                            blogTempArray.push(documentSnapshot.id);
+                        });
+                    }
+                    setFollowingBlogs(blogTempArray);
+                    setRefreshingFollowing(false);
+                });
+        } else {
+            setFollowingBlogs([]);
+        }
+    };
 
     useEffect(() => {
         const subscriber = firestore()
@@ -45,25 +69,31 @@ function HomePage() {
                 }
                 setBlogs(blogTempArray);
             });
-        const subscriberFollowing = firestore()
-            .collection("blogs")
-            .where("author.uid", "in", authUser?.following || [])
-            .orderBy("createAt", "desc")
-            .onSnapshot((querySnapshot) => {
-                let blogTempArray = [];
-                if (querySnapshot) {
-                    querySnapshot.forEach((documentSnapshot) => {
-                        blogTempArray.push(documentSnapshot.id);
+        const subscriberFollowing = () => {
+            if (authUser?.following?.length > 0) {
+                firestore()
+                    .collection("blogs")
+                    .where("author.uid", "in", authUser?.following)
+                    .orderBy("createAt", "desc")
+                    .onSnapshot((querySnapshot) => {
+                        let blogTempArray = [];
+                        if (querySnapshot) {
+                            querySnapshot.forEach((documentSnapshot) => {
+                                blogTempArray.push(documentSnapshot.id);
+                            });
+                        }
+                        setFollowingBlogs(blogTempArray);
                     });
-                }
-                setFollowingBlogs(blogTempArray);
-            });
+            } else {
+                setFollowingBlogs([]);
+            }
+        };
 
+        subscriberFollowing();
         return () => {
             subscriber();
-            subscriberFollowing();
         };
-    }, []);
+    }, [authUser?.following]);
 
     const handleScroll = (event) => {
         const offsetY = event.nativeEvent.contentOffset.y;
@@ -164,7 +194,11 @@ function HomePage() {
                     </ScrollView>
                 </TabView.Item>
                 <TabView.Item style={{ width: "100%" }}>
-                    <ScrollView style={styles.scroll} onScroll={handleScroll} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+                    <ScrollView
+                        style={styles.scroll}
+                        onScroll={handleScroll}
+                        refreshControl={<RefreshControl refreshing={refreshingFollowing} onRefresh={onRefreshFollowing} />}
+                    >
                         <View style={styles.header}>
                             <Pressable
                                 type="clear"
@@ -197,9 +231,11 @@ function HomePage() {
                                 </View>
                             </Pressable>
                         </View>
-
+                        {followingBlogs.length == 0 ? (
+                            <Text style={{ width: "100%", textAlign: "center", marginTop: 20, color: "#666" }}>Bạn chưa theo dõi ai</Text>
+                        ) : null}
                         {followingBlogs.map((blogId, index) => {
-                            return <MemoizedBlogs blogId={blogId} key={index} authUser={authUser} privacyValue={"public"} lastBlog={index + 1 === blogs.length} />;
+                            return <MemoizedBlogs blogId={blogId} key={index} authUser={authUser} lastBlog={index + 1 === followingBlogs.length} />;
                         })}
                         <View style={{ width: "100%", height: 20 }}></View>
                     </ScrollView>

@@ -10,7 +10,7 @@ import { useRouter } from "expo-router";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const Blog = ({ blogId, authUser, inMyUserPage = false, privacyValue, lastBlog = false }) => {
+const Blog = ({ blogId, authUser, inMyUserPage = false, lastBlog = false }) => {
     const router = useRouter();
     const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
 
@@ -138,14 +138,14 @@ const Blog = ({ blogId, authUser, inMyUserPage = false, privacyValue, lastBlog =
                             )}
                             {authorData?.displayName ? (
                                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                                    <Text style={styles.postTime}>{blogData?.createAt && handleConvertDate(blogData?.createAt)}</Text>
-                                    <Text style={{ color: "#888", marginLeft: 4 }}>
+                                    <Text style={{ color: "#888", marginRight: 4 }}>
                                         {blogData?.privacyValue === "friend" ? (
-                                            <Ionicons name="people" size={14} color="#666" />
+                                            <Ionicons name="people" size={14} color="#888" />
                                         ) : (
-                                            <FontAwesome5 name="globe-asia" size={14} color="#666" />
+                                            <FontAwesome5 name="globe-asia" size={14} color="#888" />
                                         )}
                                     </Text>
+                                    <Text style={styles.postTime}>{blogData?.createAt && handleConvertDate(blogData?.createAt)}</Text>
                                 </View>
                             ) : (
                                 <Skeleton animation="wave" width={100} height={18} style={{ marginVertical: 2 }} />
@@ -232,6 +232,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between", // Đẩy các phần tử về hai đầu
         alignItems: "center",
+        paddingBottom: 8,
     },
     rightContent: {
         width: 320,

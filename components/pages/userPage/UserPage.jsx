@@ -12,6 +12,7 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import SocialLink from "./SocialLink";
 import { OneSignal } from "react-native-onesignal";
 import { followUser } from "@/components/firebase/service";
+import { sendPushNotification } from "@/components/oneSignal/notification";
 
 import { AuthContext } from "@/components/context/AuthProvider";
 
@@ -171,6 +172,7 @@ const UserPage = ({ uid, userTabClick = false }) => {
     const handleFollow = async () => {
         setFollowTitleButton("...");
         const title = await followUser(authUser.uid, uid);
+        if (title === "Bỏ theo dõi") await sendPushNotification(uid, `Lượt theo dõi mới`, `${authUser?.displayName} đã theo dõi bạn`);
         setFollowTitleButton(title);
     };
 

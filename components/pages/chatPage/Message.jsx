@@ -1,23 +1,66 @@
 import { Text, View } from "react-native";
+import { useEffect, useState, useContext } from "react";
 import FastImage from "react-native-fast-image";
+import { AuthContext } from "@/components/context/AuthProvider";
+
+import Aes from "react-native-aes-crypto";
+import { RSA } from "react-native-rsa-native";
 
 const Message = ({ messageData, friendData, authUser }) => {
+    const [decryptedMessage, setDecryptedMessage] = useState("");
+    const { myPrivateKey } = useContext(AuthContext);
+    const myMessage = authUser.uid === messageData.uid;
+    const aesKeySenderEncrypted = messageData.aesKeySenderEncrypted;
+    const aesKeyReceiverEncrypted = messageData.aesKeyReceiverEncrypted;
+
+    const decryptMessage = async (encryptedMessage, aesKey, iv) => {
+        const message = Aes.decrypt(encryptedMessage, aesKey, iv, "aes-256-cbc");
+        return message;
+    };
+
+    const decryptAESKey = async () => {
+        try {
+            if (myMessage) {
+                const AesKey = await RSA.decrypt(aesKeySenderEncrypted, myPrivateKey);
+                const message = await decryptMessage(messageData.content, AesKey, messageData.iv);
+                setDecryptedMessage(message);
+            } else {
+                const AesKey = await RSA.decrypt(aesKeyReceiverEncrypted, myPrivateKey);
+                const message = await decryptMessage(messageData.content, AesKey, messageData.iv);
+                setDecryptedMessage(message);
+            }
+        } catch (error) {
+            console.error("Lỗi giải mã:", error);
+            throw error;
+        }
+    };
+
+    useEffect(() => {
+        const runDecrypt = async () => {
+            await decryptAESKey();
+        };
+
+        runDecrypt(); // Gọi hàm giải mã ngay khi component mount
+    }, []);
+
     return (
         <View style={{ paddingHorizontal: 12, marginVertical: 4 }}>
-            {authUser?.uid !== messageData.uid ? (
+            {!myMessage ? (
                 <View style={{ flexDirection: "row", alignItems: "center", maxWidth: "65%", height: "auto" }}>
                     <View style={{ justifyContent: "flex-end", marginRight: 5, alignSelf: "stretch" }}>
                         <FastImage source={{ uri: friendData.photoURL }} style={{ width: 30, height: 30, borderRadius: 50 }} />
                     </View>
                     <View style={{}}>
                         <Text style={{ backgroundColor: "#ddd", paddingHorizontal: 8, paddingVertical: 3, fontSize: 16, borderRadius: 15, wordBreak: "break-word" }}>
-                            {messageData.content}
+                            {/* {messageData.content} */}
+                            {decryptedMessage}
                         </Text>
                     </View>
                 </View>
             ) : (
                 <View style={{ flexDirection: "row-reverse" }}>
                     <View style={{ maxWidth: "65%" }}>
+                        {/* <Button title={"decrypt"} onPress={decryptAESKey} /> */}
                         <Text
                             style={{
                                 backgroundColor: "#3797f0",
@@ -29,7 +72,7 @@ const Message = ({ messageData, friendData, authUser }) => {
                                 wordBreak: "break-word",
                             }}
                         >
-                            {messageData.content}
+                            {decryptedMessage}
                         </Text>
                     </View>
                 </View>

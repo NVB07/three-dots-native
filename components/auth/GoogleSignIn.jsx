@@ -3,6 +3,8 @@ import { View, Text } from "react-native";
 import { Button } from "@rneui/base";
 import onGoogleButtonPress from "./onGoogleButtonPress";
 import AntDesign from "@expo/vector-icons/AntDesign";
+const forge = require("node-forge");
+import { RSA } from "react-native-rsa-native";
 export default function GoogleSignIn() {
     return (
         <View style={{ width: "100%", alignItems: "center" }}>

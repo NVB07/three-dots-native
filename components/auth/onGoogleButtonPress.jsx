@@ -1,6 +1,9 @@
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import firestore from "@react-native-firebase/firestore";
+const forge = require("node-forge");
+import { RSA } from "react-native-rsa-native";
+import * as SecureStore from "expo-secure-store";
 
 GoogleSignin.configure({
     webClientId: "315301649530-bkbqj75ri9sura9qpvkl725uebf51ktr.apps.googleusercontent.com", // client ID of type WEB for your server. Required to get the `idToken` on the user object, and for offline access.
@@ -15,20 +18,23 @@ GoogleSignin.configure({
     profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
 });
 export default async function onGoogleButtonPress() {
-    // Check if your device supports Google Play
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-    // Get the users ID token
     const { idToken } = await GoogleSignin.signIn();
 
-    // Create a Google credential with the token
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
     const result = await auth().signInWithCredential(googleCredential);
-    // Sign-in the user with the credential
     const { additionalUserInfo } = result;
 
+    const user = result.user;
+    const userDoc = await firestore().collection("users").doc(user.uid).get();
+
+    if (!userDoc.exists || !userDoc.data()?.publicKey) {
+        const rsaKey = await createKeyPair();
+        await firestore().collection("users").doc(user.uid).update({ publicKey: rsaKey.publicKey });
+        await SecureStore.setItemAsync("privateKey", rsaKey.privateKey);
+    }
+
     if (additionalUserInfo?.isNewUser) {
-        // Người dùng mới, thực hiện hành động thêm document vào collection 'users'
-        const user = result.user;
         await addUserToFirestore(user);
     }
 
@@ -59,4 +65,24 @@ async function addUserToFirestore(user) {
 
     // Thêm document vào collection 'users' với user.uid làm ID
     await firestore().collection("users").doc(user.uid).set(userData);
+}
+
+async function createKeyPair() {
+    const keys = await RSA.generateKeys(2048);
+    const privateKeyAsn1 = forge.pki.privateKeyToAsn1(forge.pki.privateKeyFromPem(keys.private));
+    const publicKeyAsn1 = forge.pki.publicKeyToAsn1(forge.pki.publicKeyFromPem(keys.public));
+
+    // const privateKeyBase64 = forge.util.encode64(forge.asn1.toDer(privateKeyAsn1).getBytes());
+    // const publicKeyBase64 = forge.util.encode64(forge.asn1.toDer(publicKeyAsn1).getBytes());
+
+    // console.log("Private Key (Base64):", privateKeyBase64);
+    // console.log("Public Key (Base64):", publicKeyBase64);
+    const privateKeyPem = forge.pki.privateKeyToPem(forge.pki.privateKeyFromAsn1(privateKeyAsn1));
+    const publicKeyPem = forge.pki.publicKeyToPem(forge.pki.publicKeyFromAsn1(publicKeyAsn1));
+
+    // Hiển thị khóa PEM
+    console.log("Private Key (PEM):", privateKeyPem);
+    console.log("Public Key (PEM):", publicKeyPem);
+
+    return { privateKey: privateKeyPem, publicKey: publicKeyPem };
 }

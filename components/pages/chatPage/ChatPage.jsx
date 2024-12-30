@@ -11,6 +11,8 @@ import { AuthContext } from "@/components/context/AuthProvider";
 const ChatPage = () => {
     const { messages } = useContext(CountMessageContext);
     const { authUser } = useContext(AuthContext);
+    const { myPrivateKey } = useContext(AuthContext);
+
     const [friendID, setFriendId] = useState([]);
 
     const handleChildData = (childData) => {
@@ -73,7 +75,15 @@ const ChatPage = () => {
                     const friendUid = item.data.user.find((uid) => uid !== authUser.uid);
 
                     return (
-                        <Friend onDataReceived={handleChildData} uid={friendUid} chatId={item.id} key={index} authUser={authUser} lastMessage={item.data.lastMessage} />
+                        <Friend
+                            onDataReceived={handleChildData}
+                            uid={friendUid}
+                            chatId={item.id}
+                            key={index}
+                            authUser={authUser}
+                            myPrivateKey={myPrivateKey}
+                            lastMessage={item.data.lastMessage}
+                        />
                     );
                 })}
             </ScrollView>

@@ -4,9 +4,15 @@ import { useState, useEffect, useContext } from "react";
 import FastImage from "react-native-fast-image";
 import firestore from "@react-native-firebase/firestore";
 import { useRouter } from "expo-router";
+import Aes from "react-native-aes-crypto";
+import { RSA } from "react-native-rsa-native";
 
-const Friend = ({ uid, chatId, authUser, lastMessage, onDataReceived }) => {
+const Friend = ({ uid, chatId, authUser, lastMessage, onDataReceived, myPrivateKey }) => {
+    const aesKeySenderEncrypted = lastMessage.aesKeySenderEncrypted;
+    const aesKeyReceiverEncrypted = lastMessage.aesKeyReceiverEncrypted;
+
     const router = useRouter();
+    const [decryptedMessage, setDecryptedMessage] = useState("");
     const [friendData, setFriendData] = useState(null);
     useEffect(() => {
         const subscriber = firestore()
@@ -20,6 +26,36 @@ const Friend = ({ uid, chatId, authUser, lastMessage, onDataReceived }) => {
 
         return () => subscriber();
     }, [uid]);
+    const decryptMessage = async (encryptedMessage, aesKey, iv) => {
+        const message = Aes.decrypt(encryptedMessage, aesKey, iv, "aes-256-cbc");
+        return message;
+    };
+
+    const decryptAESKey = async () => {
+        try {
+            const myMessage = authUser.uid === lastMessage.uid;
+            if (myMessage) {
+                const AesKey = await RSA.decrypt(aesKeySenderEncrypted, myPrivateKey);
+                const message = await decryptMessage(lastMessage.content, AesKey, lastMessage.iv);
+                setDecryptedMessage(message);
+            } else {
+                const AesKey = await RSA.decrypt(aesKeyReceiverEncrypted, myPrivateKey);
+                const message = await decryptMessage(lastMessage.content, AesKey, lastMessage.iv);
+                setDecryptedMessage(message);
+            }
+        } catch (error) {
+            console.error("Lỗi giải mã:", error);
+            throw error;
+        }
+    };
+
+    useEffect(() => {
+        const runDecrypt = async () => {
+            await decryptAESKey();
+        };
+
+        runDecrypt();
+    }, [lastMessage]);
 
     return (
         <View style={{ width: "100%", marginVertical: 4 }}>
@@ -50,13 +86,13 @@ const Friend = ({ uid, chatId, authUser, lastMessage, onDataReceived }) => {
 
                         {lastMessage?.uid !== authUser.uid ? (
                             <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 15, fontWeight: "normal", color: "#0069FFFF" }}>
-                                {lastMessage?.content || <Text style={{ color: "#666", fontStyle: "italic" }}> Chưa có tin nhắn</Text>}
+                                {decryptedMessage || <Text style={{ color: "#666", fontStyle: "italic" }}> Chưa có tin nhắn</Text>}
                             </Text>
                         ) : (
                             <View style={{ flexDirection: "row", width: "100%" }}>
                                 <Text style={{ fontSize: 15, fontWeight: "normal", color: "#666" }}>{"Bạn: "}</Text>
                                 <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 15, fontWeight: "normal", color: "#666", flex: 1 }}>
-                                    {lastMessage?.content || <Text style={{ color: "#666", fontStyle: "italic" }}> Chưa có tin nhắn</Text>}
+                                    {decryptedMessage || <Text style={{ color: "#666", fontStyle: "italic" }}> Chưa có tin nhắn</Text>}
                                 </Text>
                             </View>
                         )}

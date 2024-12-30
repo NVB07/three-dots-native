@@ -4,12 +4,15 @@ import firestore from "@react-native-firebase/firestore";
 import LoginPage from "@/components/pages/loginPage/LoginPage";
 import Loading from "@/components/pages/loading/Loading";
 import { OneSignal } from "react-native-onesignal";
+import * as SecureStore from "expo-secure-store";
+
 export const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
     // Set an initializing state whilst Firebase connects
     const [initializing, setInitializing] = useState(true);
     const [authUser, setAuthUser] = useState(null);
     const [currentUser, setCurrentUser] = useState(1);
+    const [myPrivateKey, setMyPrivateKey] = useState(null);
 
     useEffect(() => {
         const subscriber = auth().onAuthStateChanged((user) => {
@@ -17,6 +20,19 @@ const AuthProvider = ({ children }) => {
         });
         return subscriber; // unsubscribe on unmount
     }, []);
+
+    useEffect(() => {
+        const fetchPrivateKey = async () => {
+            try {
+                const privateKey = await SecureStore.getItemAsync("privateKey");
+                setMyPrivateKey(privateKey); // Cập nhật trạng thái khi có private key
+            } catch (error) {
+                console.error("Lỗi khi lấy private key: ", error);
+            }
+        };
+
+        fetchPrivateKey(); // Gọi hàm bất đồng bộ để lấy private key
+    }, [authUser]);
 
     useEffect(() => {
         if (currentUser !== 1 && currentUser?.uid) {
@@ -28,6 +44,7 @@ const AuthProvider = ({ children }) => {
                         if (documentSnapshot.exists) {
                             const data = documentSnapshot.data();
                             setAuthUser(data);
+
                             OneSignal.login(data.uid);
                             console.log("uid login: ", data.uid);
                         }
@@ -51,7 +68,7 @@ const AuthProvider = ({ children }) => {
         return <LoginPage />;
     }
 
-    return <AuthContext.Provider value={{ authUser, setAuthUser }}>{children}</AuthContext.Provider>;
+    return <AuthContext.Provider value={{ authUser, myPrivateKey, setAuthUser }}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

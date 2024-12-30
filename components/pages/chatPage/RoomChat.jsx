@@ -14,22 +14,6 @@ const RoomChat = ({ firendData, roomId }) => {
     const [loading, setLoading] = useState(true);
     const scrollableRef = useRef(null);
     const { authUser } = useContext(AuthContext);
-    // const requestUserPermission = async () => {
-    //     const authStatus = await messaging().requestPermission();
-    //     const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-    //     if (enabled) {
-    //         console.log("Authorization status:", authStatus);
-    //     }
-    // };
-    // const getToken = async () => {
-    //     await messaging().registerDeviceForRemoteMessages();
-    //     const token = await messaging().getToken();
-    //     console.log("token: ", token);
-    // };
-    // useEffect(() => {
-    //     requestUserPermission();
-    //     getToken();
-    // }, []);
 
     useEffect(() => {
         const subscriber = firestore()

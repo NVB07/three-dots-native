@@ -5,7 +5,6 @@ import { useEffect, useState, useRef } from "react";
 import { sendMessageValue } from "@/components/firebase/service";
 import firestore from "@react-native-firebase/firestore";
 import { sendPushNotification } from "@/components/oneSignal/notification";
-import * as SecureStore from "expo-secure-store";
 const forge = require("node-forge");
 import Aes from "react-native-aes-crypto";
 
@@ -42,15 +41,19 @@ const ChatInput = ({ documentId, currentUserData, setMessageArray, scrollRef, fr
     }
 
     const handleSendMessage = async () => {
-        console.log("=================================================================");
-
         try {
-            const { cipher, iv, AESKey } = await getData(messageValue);
-            console.log("secured", { cipher, iv, AESKey });
+            const valueMessageNormal = {
+                content: messageValue,
+                uid: currentUserData.uid,
+                sendTime: firestore.FieldValue.serverTimestamp(),
+            };
 
+            // setMessageArray((prev) => [...prev, valueMessageNormal]);
+            setMessageValue("");
+            scrollToBottom(true, 100);
+            const { cipher, iv, AESKey } = await getData(messageValue);
             if (friendData.publicKey && currentUserData.publicKey) {
                 const encryptedAESKey = encryptData(AESKey);
-                console.log("encryptedAESKey", encryptedAESKey);
 
                 const value = {
                     content: cipher,
@@ -60,10 +63,7 @@ const ChatInput = ({ documentId, currentUserData, setMessageArray, scrollRef, fr
                     aesKeySenderEncrypted: encryptedAESKey.senderEncryptedBase64,
                     iv: iv,
                 };
-                console.log("value: ", value);
 
-                setMessageArray((prev) => [...prev, value]);
-                setMessageValue("");
                 scrollToBottom(true, 100);
                 await sendMessageValue(documentId, value);
                 await sendPushNotification(friendData?.uid, "Tin nhắn mới !", `${currentUserData?.displayName}: ${messageValue}`, currentUserData.photoURL);

@@ -44,8 +44,7 @@ const Friend = ({ uid, chatId, authUser, lastMessage, onDataReceived, myPrivateK
                 setDecryptedMessage(message);
             }
         } catch (error) {
-            console.error("Lỗi giải mã:", error);
-            throw error;
+            setDecryptedMessage("Chưa có tin nhắn");
         }
     };
 
@@ -90,7 +89,7 @@ const Friend = ({ uid, chatId, authUser, lastMessage, onDataReceived, myPrivateK
                             </Text>
                         ) : (
                             <View style={{ flexDirection: "row", width: "100%" }}>
-                                <Text style={{ fontSize: 15, fontWeight: "normal", color: "#666" }}>{"Bạn: "}</Text>
+                                <Text style={{ fontSize: 15, fontWeight: "normal", color: "#666" }}>{decryptedMessage !== "Chưa có tin nhắn" && "Bạn: "}</Text>
                                 <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 15, fontWeight: "normal", color: "#666", flex: 1 }}>
                                     {decryptedMessage || <Text style={{ color: "#666", fontStyle: "italic" }}> Chưa có tin nhắn</Text>}
                                 </Text>

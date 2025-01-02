@@ -26,13 +26,14 @@ export default async function onGoogleButtonPress() {
     const { additionalUserInfo } = result;
 
     const user = result.user;
-    const userDoc = await firestore().collection("users").doc(user.uid).get();
+    // const userDoc = await firestore().collection("users").doc(user.uid).get();
 
-    if (!userDoc.exists || !userDoc.data()?.publicKey) {
-        const rsaKey = await createKeyPair();
-        await firestore().collection("users").doc(user.uid).update({ publicKey: rsaKey.publicKey });
-        await SecureStore.setItemAsync("privateKey", rsaKey.privateKey);
-    }
+    // if (!userDoc.data()?.publicKey) {
+    //     const rsaKey = await createKeyPair();
+    //     const encryptPrivateKey = await encryptKey(rsaKey.privateKey, user.uid);
+    //     await firestore().collection("users").doc(user.uid).update({ publicKey: rsaKey.publicKey });
+    //     await SecureStore.setItemAsync("privateKey", rsaKey.privateKey);
+    // }
 
     if (additionalUserInfo?.isNewUser) {
         await addUserToFirestore(user);
@@ -65,24 +66,4 @@ async function addUserToFirestore(user) {
 
     // Thêm document vào collection 'users' với user.uid làm ID
     await firestore().collection("users").doc(user.uid).set(userData);
-}
-
-async function createKeyPair() {
-    const keys = await RSA.generateKeys(2048);
-    const privateKeyAsn1 = forge.pki.privateKeyToAsn1(forge.pki.privateKeyFromPem(keys.private));
-    const publicKeyAsn1 = forge.pki.publicKeyToAsn1(forge.pki.publicKeyFromPem(keys.public));
-
-    // const privateKeyBase64 = forge.util.encode64(forge.asn1.toDer(privateKeyAsn1).getBytes());
-    // const publicKeyBase64 = forge.util.encode64(forge.asn1.toDer(publicKeyAsn1).getBytes());
-
-    // console.log("Private Key (Base64):", privateKeyBase64);
-    // console.log("Public Key (Base64):", publicKeyBase64);
-    const privateKeyPem = forge.pki.privateKeyToPem(forge.pki.privateKeyFromAsn1(privateKeyAsn1));
-    const publicKeyPem = forge.pki.publicKeyToPem(forge.pki.publicKeyFromAsn1(publicKeyAsn1));
-
-    // Hiển thị khóa PEM
-    console.log("Private Key (PEM):", privateKeyPem);
-    console.log("Public Key (PEM):", publicKeyPem);
-
-    return { privateKey: privateKeyPem, publicKey: publicKeyPem };
 }

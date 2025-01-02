@@ -35,18 +35,7 @@ const SearchFriend = ({ friendData, chatId, authUser, lastMessage }) => {
                     <View style={{ justifyContent: "space-between", flex: 1 }}>
                         <Text style={{ fontSize: 16, fontWeight: lastMessage?.uid !== authUser.uid ? 600 : "normal" }}>{friendData?.displayName}</Text>
 
-                        {lastMessage?.uid !== authUser.uid ? (
-                            <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 15, fontWeight: "normal", color: "#0069FFFF" }}>
-                                {lastMessage?.content}
-                            </Text>
-                        ) : (
-                            <View style={{ flexDirection: "row", width: "100%" }}>
-                                <Text style={{ fontSize: 15, fontWeight: "normal", color: "#666" }}>{"Bạn: "}</Text>
-                                <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 15, fontWeight: "normal", color: "#666", flex: 1 }}>
-                                    {lastMessage?.content}
-                                </Text>
-                            </View>
-                        )}
+                        <Text style={{ fontSize: 15, fontWeight: "normal", color: "#666", fontStyle: "italic" }}>Nhấn để vào đoạn chat</Text>
                     </View>
                 </Button>
             </View>

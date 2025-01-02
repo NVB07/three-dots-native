@@ -13,6 +13,7 @@ import SocialLink from "./SocialLink";
 import { OneSignal } from "react-native-onesignal";
 import { followUser } from "@/components/firebase/service";
 import { sendPushNotification } from "@/components/oneSignal/notification";
+import * as SecureStore from "expo-secure-store";
 
 import { AuthContext } from "@/components/context/AuthProvider";
 
@@ -59,6 +60,7 @@ const UserPage = ({ uid, userTabClick = false }) => {
             await GoogleSignin.signOut();
             await auth().signOut();
             setAuthUser(null);
+            await SecureStore.deleteItemAsync("privateKey");
             OneSignal.logout();
             console.log("signOut");
         } catch (e) {

@@ -30,8 +30,7 @@ const Message = ({ messageData, friendData, authUser }) => {
                 setDecryptedMessage(message);
             }
         } catch (error) {
-            console.error("Lỗi giải mã:", error);
-            throw error;
+            setDecryptedMessage(null);
         }
     };
 
@@ -40,8 +39,10 @@ const Message = ({ messageData, friendData, authUser }) => {
             await decryptAESKey();
         };
 
-        runDecrypt(); // Gọi hàm giải mã ngay khi component mount
+        runDecrypt();
     }, []);
+
+    if (decryptedMessage === null || decryptedMessage === "") return null;
 
     return (
         <View style={{ paddingHorizontal: 12, marginVertical: 4 }}>
@@ -50,7 +51,7 @@ const Message = ({ messageData, friendData, authUser }) => {
                     <View style={{ justifyContent: "flex-end", marginRight: 5, alignSelf: "stretch" }}>
                         <FastImage source={{ uri: friendData.photoURL }} style={{ width: 30, height: 30, borderRadius: 50 }} />
                     </View>
-                    <View style={{}}>
+                    <View style={decryptedMessage === "" ? { width: "40%" } : {}}>
                         <Text style={{ backgroundColor: "#ddd", paddingHorizontal: 8, paddingVertical: 3, fontSize: 16, borderRadius: 15, wordBreak: "break-word" }}>
                             {/* {messageData.content} */}
                             {decryptedMessage}
@@ -59,11 +60,12 @@ const Message = ({ messageData, friendData, authUser }) => {
                 </View>
             ) : (
                 <View style={{ flexDirection: "row-reverse" }}>
-                    <View style={{ maxWidth: "65%" }}>
+                    <View style={{ maxWidth: "65%", width: decryptedMessage !== "" ? "auto" : "40%" }}>
                         {/* <Button title={"decrypt"} onPress={decryptAESKey} /> */}
                         <Text
                             style={{
-                                backgroundColor: "#3797f0",
+                                backgroundColor: decryptedMessage !== "" ? "#3797f0" : "#9acbf9",
+
                                 color: "#fff",
                                 paddingHorizontal: 8,
                                 paddingVertical: 3,

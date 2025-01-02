@@ -99,7 +99,7 @@ const BlogPage = ({ blogid, blogData, author, comment, imageSize, authUser }) =>
                                 />
                             </View>
                         )}
-                        <CountReact showSheet authUser={authUser} blogId={blogid} />
+                        <CountReact authorData={author} showSheet authUser={authUser} blogId={blogid} />
                     </View>
                     {commentSnapshot.map((item, index) => {
                         return <CommentItem key={index} comment={item} authUser={authUser} author={author} blogId={blogid} />;

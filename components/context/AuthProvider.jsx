@@ -61,6 +61,7 @@ const AuthProvider = ({ children }) => {
                     style: "destructive",
                     onPress: () => {
                         setAesKey("");
+                        setConfirmAesKey("");
                         setDialogVisible(true);
                         setDialogRestore(false);
                     },
@@ -101,6 +102,8 @@ const AuthProvider = ({ children }) => {
             .doc(authUser.uid)
             .set({ key: encryptedPrivateKey, uid: authUser.uid })
             .then(() => {
+                setAesKey("");
+                setConfirmAesKey("");
                 setDialogVisible(false);
             });
     };
@@ -114,6 +117,7 @@ const AuthProvider = ({ children }) => {
             setMyPrivateKey(privateKeyDecrypted);
             setDialogRestore(false);
             setAesKey("");
+            setConfirmAesKey("");
         } catch (error) {
             Alert.alert(
                 "Sai mật khẩu", // Tiêu đề của alert

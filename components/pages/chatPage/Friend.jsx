@@ -8,8 +8,8 @@ import Aes from "react-native-aes-crypto";
 import { RSA } from "react-native-rsa-native";
 
 const Friend = ({ uid, chatId, authUser, lastMessage, onDataReceived, myPrivateKey }) => {
-    const aesKeySenderEncrypted = lastMessage.aesKeySenderEncrypted;
-    const aesKeyReceiverEncrypted = lastMessage.aesKeyReceiverEncrypted;
+    const aesKeySenderEncrypted = lastMessage?.aesKeySenderEncrypted;
+    const aesKeyReceiverEncrypted = lastMessage?.aesKeyReceiverEncrypted;
 
     const router = useRouter();
     const [decryptedMessage, setDecryptedMessage] = useState("");
@@ -33,14 +33,14 @@ const Friend = ({ uid, chatId, authUser, lastMessage, onDataReceived, myPrivateK
 
     const decryptAESKey = async () => {
         try {
-            const myMessage = authUser.uid === lastMessage.uid;
+            const myMessage = authUser.uid === lastMessage?.uid;
             if (myMessage) {
                 const AesKey = await RSA.decrypt(aesKeySenderEncrypted, myPrivateKey);
-                const message = await decryptMessage(lastMessage.content, AesKey, lastMessage.iv);
+                const message = await decryptMessage(lastMessage?.content, AesKey, lastMessage?.iv);
                 setDecryptedMessage(message);
             } else {
                 const AesKey = await RSA.decrypt(aesKeyReceiverEncrypted, myPrivateKey);
-                const message = await decryptMessage(lastMessage.content, AesKey, lastMessage.iv);
+                const message = await decryptMessage(lastMessage?.content, AesKey, lastMessage?.iv);
                 setDecryptedMessage(message);
             }
         } catch (error) {

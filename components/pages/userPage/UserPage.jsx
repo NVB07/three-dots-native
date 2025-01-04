@@ -1,5 +1,5 @@
 import { View, ScrollView, Pressable, Text, Alert, RefreshControl } from "react-native";
-import { Button } from "@rneui/base";
+import { Button, Dialog } from "@rneui/base";
 import FastImage from "react-native-fast-image";
 import { useState, useEffect, useContext, useCallback } from "react";
 import firestore from "@react-native-firebase/firestore";
@@ -19,6 +19,7 @@ import { AuthContext } from "@/components/context/AuthProvider";
 
 const UserPage = ({ uid, userTabClick = false }) => {
     const { authUser, setAuthUser } = useContext(AuthContext);
+    const [visible1, setVisible1] = useState(false);
     const myUserPage = uid === authUser.uid;
     const [userData, setUserData] = useState();
     const [userBlog, setUserBlog] = useState([]);
@@ -26,6 +27,8 @@ const UserPage = ({ uid, userTabClick = false }) => {
     const [followTitleButton, setFollowTitleButton] = useState("---");
     const router = useRouter();
     const [refreshing, setRefreshing] = useState(false);
+    const [dialogTitle, setDialogTitle] = useState("");
+    const [dialogContent, setDialogContent] = useState([]);
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
@@ -178,6 +181,42 @@ const UserPage = ({ uid, userTabClick = false }) => {
         setFollowTitleButton(title);
     };
 
+    const fetchUsersData = async (uids) => {
+        try {
+            const userPromises = uids.map((uid) => firestore().collection("users").doc(uid).get());
+
+            const userDocs = await Promise.all(userPromises);
+
+            const usersData = userDocs.map((doc) => ({
+                id: doc.id, // UID
+                ...doc.data(),
+            }));
+
+            return usersData;
+        } catch (error) {
+            console.error("Error fetching user data: ", error);
+            return [];
+        }
+    };
+
+    const toggleDialog1 = async (title, uids = []) => {
+        setVisible1((pre) => {
+            if (pre === false) {
+                setDialogTitle(title);
+                if (uids.length > 0) fetchUsersData(uids).then((usersData) => setDialogContent(usersData));
+                return true;
+            } else {
+                setDialogContent([]);
+                return false;
+            }
+        });
+    };
+    const handleViewOtherUser = (uid) => {
+        setVisible1(false);
+        setDialogContent([]);
+        router.push(`/userid/${uid}`);
+    };
+
     return (
         <View style={{ paddingBottom: 30 }}>
             <HeaderBack title={userData?.displayName} />
@@ -191,13 +230,66 @@ const UserPage = ({ uid, userTabClick = false }) => {
                             </View>
                         </View>
                         <View style={{ flexDirection: "row", paddingBottom: 8 }}>
-                            <Button type="clear" titleStyle={{ color: "#666", fontSize: 15 }} buttonStyle={{ padding: 0, paddingHorizontal: 0 }}>
+                            <Button
+                                onPress={async () =>
+                                    await toggleDialog1(`Đang theo dõi: ${userData?.following?.length ? userData?.following?.length : "0"} `, userData?.following)
+                                }
+                                type="clear"
+                                titleStyle={{ color: "#666", fontSize: 15 }}
+                                buttonStyle={{ padding: 0, paddingHorizontal: 0 }}
+                            >
                                 <Text> {userData?.following?.length ? userData?.following?.length + " đang theo dõi," : "0 đang theo dõi,"}</Text>
                             </Button>
-                            <Button type="clear" titleStyle={{ color: "#666", fontSize: 15 }} buttonStyle={{ padding: 0, paddingHorizontal: 0 }}>
+                            <Button
+                                onPress={async () =>
+                                    await toggleDialog1(`Người theo dõi: ${userData?.followers?.length ? userData?.followers?.length : "0"} `, userData?.followers)
+                                }
+                                type="clear"
+                                titleStyle={{ color: "#666", fontSize: 15 }}
+                                buttonStyle={{ padding: 0, paddingHorizontal: 0 }}
+                            >
                                 <Text> {userData?.followers?.length ? userData?.followers?.length + " người theo dõi" : " 0 người theo dõi"}</Text>
                             </Button>
                         </View>
+                        <Dialog overlayStyle={{ backgroundColor: "#fff", height: "80%", width: "90%" }} isVisible={visible1} onBackdropPress={toggleDialog1}>
+                            <Dialog.Title title={dialogTitle} />
+                            <ScrollView>
+                                <View style={{}}>
+                                    {dialogContent.length > 0 ? (
+                                        dialogContent?.map((item, index) => {
+                                            return (
+                                                <Pressable
+                                                    key={index}
+                                                    onPress={() => handleViewOtherUser(item.id)}
+                                                    style={({ pressed }) => [
+                                                        {
+                                                            backgroundColor: pressed ? "#E2E2E2FF" : "#f2f2f2",
+                                                        },
+                                                        { padding: 5, flexDirection: "row", borderRadius: 10, marginBottom: 5 },
+                                                    ]}
+                                                >
+                                                    <FastImage
+                                                        style={{ width: 36, height: 36, borderRadius: 9999, marginRight: 6 }}
+                                                        source={{
+                                                            uri: item.photoURL,
+                                                            priority: FastImage.priority.low,
+                                                        }}
+                                                        resizeMode={FastImage.resizeMode.cover}
+                                                    />
+                                                    <View style={{ flex: 1 }}>
+                                                        <Text style={{ fontSize: 16, fontWeight: 500 }}>{item?.displayName}</Text>
+
+                                                        <Text style={{ color: "red" }}>Trang cá nhân</Text>
+                                                    </View>
+                                                </Pressable>
+                                            );
+                                        })
+                                    ) : (
+                                        <Text>Không có người nào ở đây !</Text>
+                                    )}
+                                </View>
+                            </ScrollView>
+                        </Dialog>
                     </View>
                     <View style={{ width: "40%", alignItems: "flex-end" }}>
                         <FastImage

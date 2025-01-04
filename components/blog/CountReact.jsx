@@ -72,7 +72,8 @@ const CountReact = ({ authUser, blogId, blogData, authorData, showSheet = false,
                 .update({
                     liked: !prev ? firestore.FieldValue.arrayUnion(authUser.uid) : firestore.FieldValue.arrayRemove(authUser.uid),
                 });
-            if (!prev) await sendPushNotification(authorData.uid, `Lượt thích bài viết `, `${authUser.displayName} đã thích bài viết của bạn`);
+            if (!prev && authorData.uid !== authUser.uid)
+                await sendPushNotification(authorData.uid, `Lượt thích bài viết `, `${authUser.displayName} đã thích bài viết của bạn`);
             !prev;
         });
     };

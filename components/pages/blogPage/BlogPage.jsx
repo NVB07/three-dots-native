@@ -16,7 +16,7 @@ const BlogPage = ({ blogid, blogData, author, comment, imageSize, authUser }) =>
 
     const handleAddComment = async () => {
         await addComment(blogid, commentValue, authUser);
-        await sendPushNotification(author.uid, `Bình luận mới :`, `${authUser.displayName}: "${commentValue}"`);
+        if (authUser.uid !== author.uid) await sendPushNotification(author.uid, `Bình luận mới :`, `${authUser.displayName}: "${commentValue}"`);
         setCommentValue("");
     };
 

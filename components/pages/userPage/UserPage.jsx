@@ -354,7 +354,16 @@ const UserPage = ({ uid, userTabClick = false }) => {
 
                 <View style={{ width: "100%" }}>
                     {userBlog.map((item, index) => {
-                        return <Blog blogId={item} key={index} authUser={authUser} inMyUserPage={userTabClick} />;
+                        return (
+                            <Blog
+                                blogId={item}
+                                key={index}
+                                authUser={authUser}
+                                inMyUserPage={userTabClick}
+                                following={userData?.followers?.includes(authUser.uid)}
+                                anotherUserPage={true}
+                            />
+                        );
                     })}
                 </View>
                 <View style={{ width: "100%", height: 20 }}></View>

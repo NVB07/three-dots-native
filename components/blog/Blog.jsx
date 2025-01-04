@@ -10,7 +10,7 @@ import { useRouter } from "expo-router";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const Blog = ({ blogId, authUser, inMyUserPage = false, lastBlog = false }) => {
+const Blog = ({ blogId, authUser, inMyUserPage = false, lastBlog = false, following = false, anotherUserPage = false }) => {
     const router = useRouter();
     const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
 
@@ -106,7 +106,7 @@ const Blog = ({ blogId, authUser, inMyUserPage = false, lastBlog = false }) => {
             return () => subscriber();
         }
     }, [blogData?.author.uid]);
-
+    if (following === false && anotherUserPage && blogData?.privacyValue === "friend" && !inMyUserPage) return null;
     return (
         <Text style={{ ...styles.main, marginBottom: lastBlog ? 70 : 12 }}>
             <View style={styles.blog}>
